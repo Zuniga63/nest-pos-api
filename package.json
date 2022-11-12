@@ -21,7 +21,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prepare": "husky install"
   },
-  "pre-commit": "lint-staged",
   "dependencies": {
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
