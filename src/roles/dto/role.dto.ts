@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RoleDto {
-  @ApiProperty()
+  @ApiProperty({ example: '61d9cfbf17ed7311c4b3e485' })
   id: string;
 
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ example: ['61d9cfbf17ed7311c4b3e485'] })
   users: string[];
 
   @ApiProperty({ example: ['create-role', 'update-role'] })

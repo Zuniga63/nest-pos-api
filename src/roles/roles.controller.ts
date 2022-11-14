@@ -14,6 +14,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -22,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { RoleDto } from './dto/role.dto';
 import ValidationErrorDto from '../dto/validation-error.dto';
+import { FindOneParams } from './dto/find-one-params.dto';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -66,9 +68,27 @@ export class RolesController {
     return this.rolesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(+id);
+  // ------------------------------------------------------------------------------------
+  // FIND ALL ROLES
+  // ------------------------------------------------------------------------------------
+  @Get(':roleId')
+  @ApiOkResponse({
+    description: 'The role data',
+    schema: {
+      type: 'object',
+      properties: {
+        role: { $ref: getSchemaPath(RoleDto) },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'If the ID of role is not a MongoId valid',
+  })
+  @ApiNotFoundResponse({
+    description: 'The role not found',
+  })
+  findOne(@Param() params: FindOneParams) {
+    return this.rolesService.findOne(params.roleId);
   }
 
   @Patch(':id')
