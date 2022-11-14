@@ -14,14 +14,18 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { RoleDto } from './dto/role.dto';
 import ValidationErrorDto from '../dto/validation-error.dto';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Only admin can access.' })
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
@@ -48,8 +52,16 @@ export class RolesController {
   }
 
   // ------------------------------------------------------------------------------------
+  // FIND ALL ROLES
   // ------------------------------------------------------------------------------------
   @Get()
+  @ApiOkResponse({
+    description: 'List of registered roles',
+    schema: {
+      type: 'array',
+      items: { $ref: getSchemaPath(RoleDto) },
+    },
+  })
   findAll() {
     return this.rolesService.findAll();
   }

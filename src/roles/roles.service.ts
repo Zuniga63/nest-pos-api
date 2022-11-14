@@ -20,7 +20,7 @@ export class RolesService {
   }
 
   async findAll() {
-    return await this.roleModel.find({});
+    return await this.roleModel.find({}).sort('order');
   }
 
   findOne(id: number) {
