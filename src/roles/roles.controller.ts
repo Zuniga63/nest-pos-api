@@ -69,7 +69,7 @@ export class RolesController {
   }
 
   // ------------------------------------------------------------------------------------
-  // FIND ALL ROLES
+  // FIND ROLE BY ID
   // ------------------------------------------------------------------------------------
   @Get(':roleId')
   @ApiOkResponse({
@@ -96,8 +96,27 @@ export class RolesController {
     return this.rolesService.update(+id, updateRoleDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
+  // ------------------------------------------------------------------------------------
+  // DELETE ROLE BY ID
+  // ------------------------------------------------------------------------------------
+  @Delete(':roleId')
+  @ApiOkResponse({
+    description: 'The role was successfully removed',
+    schema: {
+      type: 'object',
+      properties: {
+        ok: { type: 'boolean' },
+        role: { $ref: getSchemaPath(RoleDto) },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'If the ID of role is not a MongoId valid',
+  })
+  @ApiNotFoundResponse({
+    description: 'The role not found',
+  })
+  remove(@Param() params: FindOneParams) {
+    return this.rolesService.remove(params.roleId);
   }
 }

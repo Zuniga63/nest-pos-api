@@ -34,7 +34,16 @@ export class RolesService {
     return `This action updates a #${id} role`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  async remove(id: string) {
+    const roleDeleted = await this.roleModel.findByIdAndDelete(id);
+    if (!roleDeleted) return new NotFoundException('Rol no encontrado');
+
+    // Update the order of rest roles
+    await this.roleModel.updateMany(
+      { order: { $gt: roleDeleted.order } },
+      { $inc: { order: -1 } }
+    );
+
+    return { ok: true, role: roleDeleted };
   }
 }
