@@ -12,7 +12,7 @@ import { createSlug } from 'src/utils';
         name: Role.name,
         useFactory: () => {
           const schema = RoleSchema;
-          schema.pre('save', function (next) {
+          schema.pre('validate', function (next) {
             if (this.isModified('name') || this.isNew) {
               this.slug = createSlug(this.name);
             }

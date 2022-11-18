@@ -16,6 +16,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
@@ -91,9 +92,28 @@ export class RolesController {
     return this.rolesService.findOne(params.roleId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(+id, updateRoleDto);
+  // ------------------------------------------------------------------------------------
+  // UPDATE ROLE BY ID
+  // ------------------------------------------------------------------------------------
+  @Patch(':roleId')
+  @ApiOperation({ summary: 'Update Role by ID and return Role updated' })
+  @ApiOkResponse({
+    description: 'The role was successfully update',
+    schema: {
+      type: 'object',
+      properties: {
+        role: { $ref: getSchemaPath(RoleDto) },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'If the ID of role is not a MongoId valid',
+  })
+  @ApiNotFoundResponse({
+    description: 'The role not found',
+  })
+  update(@Param() params: FindOneParams, @Body() updateRoleDto: UpdateRoleDto) {
+    return this.rolesService.update(params.roleId, updateRoleDto);
   }
 
   // ------------------------------------------------------------------------------------

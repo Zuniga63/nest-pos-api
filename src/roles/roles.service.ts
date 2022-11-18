@@ -30,8 +30,42 @@ export class RolesService {
     return { role };
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async update(id: string, updateRoleDto: UpdateRoleDto) {
+    const { name, order } = updateRoleDto;
+
+    const role = await this.roleModel.findById(id);
+    if (!role) return new NotFoundException('Rol no encontrado');
+
+    if (name && name !== role.name) {
+      role.name = name;
+      await role.save();
+    }
+
+    if (order && order !== role.order) {
+      const count = await this.roleModel.count();
+
+      if (role.order < count) {
+        // All roles with higher order are reduced by one degree
+        await this.roleModel.updateMany(
+          { order: { $gt: role.order } },
+          { $inc: { order: -1 } }
+        );
+      }
+
+      // Update the order of current role
+      role.order = order < count ? order : count;
+      await role.save({ validateModifiedOnly: true });
+
+      if (role.order !== count) {
+        // All roles with equal or higher order are increased by one grade.
+        await this.roleModel
+          .updateMany({ order: { $gte: role.order } }, { $inc: { order: 1 } })
+          .where('_id')
+          .ne(role._id);
+      }
+    }
+
+    return { role };
   }
 
   async remove(id: string) {
