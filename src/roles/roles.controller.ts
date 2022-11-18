@@ -37,6 +37,7 @@ export class RolesController {
   // CREATE A NEW ROLE
   // ------------------------------------------------------------------------------------
   @Post()
+  @ApiOperation({ summary: 'Create a new role' })
   @ApiCreatedResponse({
     description: 'Role has been succesfully created.',
     type: RoleDto,
@@ -58,6 +59,7 @@ export class RolesController {
   // FIND ALL ROLES
   // ------------------------------------------------------------------------------------
   @Get()
+  @ApiOperation({ summary: 'Get all roles sort by order' })
   @ApiOkResponse({
     description: 'List of registered roles',
     schema: {
@@ -73,6 +75,7 @@ export class RolesController {
   // FIND ROLE BY ID
   // ------------------------------------------------------------------------------------
   @Get(':roleId')
+  @ApiOperation({ summary: 'Get the Role by ID' })
   @ApiOkResponse({
     description: 'The role data',
     schema: {
@@ -120,6 +123,7 @@ export class RolesController {
   // DELETE ROLE BY ID
   // ------------------------------------------------------------------------------------
   @Delete(':roleId')
+  @ApiOperation({ summary: 'Delete role by ID and get the delete role' })
   @ApiOkResponse({
     description: 'The role was successfully removed',
     schema: {
