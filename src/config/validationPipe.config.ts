@@ -4,6 +4,7 @@ const config: ValidationPipeOptions = {
   validationError: { target: true, value: true },
   whitelist: true,
   transform: true,
+  stopAtFirstError: true,
   exceptionFactory(errors) {
     const error: {
       [key: string]: {
