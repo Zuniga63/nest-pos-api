@@ -33,5 +33,6 @@ import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
   ],
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}

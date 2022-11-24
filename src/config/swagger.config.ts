@@ -7,4 +7,5 @@ export default new DocumentBuilder()
   .addTag('Auth', 'End point for register and login')
   .addTag('Users', 'Route for user administration')
   .addTag('Roles', 'Routes for role administration')
+  .addBearerAuth()
   .build();
