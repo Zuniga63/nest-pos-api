@@ -1,15 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import { Schema as MongooseSchema, HydratedDocument } from 'mongoose';
 import { Role } from 'src/roles/schemas/role.schema';
 import { emailRegex, IImage } from 'src/utils';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, toObject: { virtuals: true } })
 export class User {
   id: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Role' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Role' })
   role: Role;
 
   @Prop({
@@ -22,6 +22,7 @@ export class User {
   @Prop({
     unique: true,
     match: [emailRegex, 'No es un correo electronico válido'],
+    lowercase: true,
   })
   email: string;
 
