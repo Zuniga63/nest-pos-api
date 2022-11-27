@@ -4,7 +4,7 @@ import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 import { genSaltSync, hashSync } from 'bcrypt';
-import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
+import { Role, RoleSchema } from 'src/modules/roles/schemas/role.schema';
 
 @Module({
   imports: [

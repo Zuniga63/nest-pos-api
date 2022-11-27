@@ -23,7 +23,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { RoleDto } from './dto/role.dto';
-import ValidationErrorDto from '../dto/validation-error.dto';
+import ValidationErrorDto from '../../dto/validation-error.dto';
 import { FindOneParams } from './dto/find-one-params.dto';
 
 @ApiTags('Roles')
