@@ -15,7 +15,13 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     // *The password encrytion ocurrs in the pre.save hook of the model.
-    const user = await this.userModel.create(createUserDto);
+    const isFirstUser = (await this.userModel.count()) <= 0;
+
+    const user = await this.userModel.create({
+      isAdmin: isFirstUser,
+      ...createUserDto,
+    });
+
     const { password: _, ...result } = user.toObject();
     return { user: result };
   }
