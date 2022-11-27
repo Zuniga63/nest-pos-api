@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -14,6 +15,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -25,11 +27,18 @@ import {
 import { RoleDto } from './dto/role.dto';
 import ValidationErrorDto from '../../dto/validation-error.dto';
 import { FindOneParams } from './dto/find-one-params.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PermissionsGuards } from '../auth/guards/permissions.guard';
+import { RequirePermissions } from '../auth/decorators/required-permissions.decorator';
+import { Permission } from '../auth/permission.enum';
+import { UpdatePermissionsDto } from './dto/update-permissions.dto';
 
+@Controller('roles')
+@UseGuards(JwtAuthGuard, PermissionsGuards)
 @ApiTags('Roles')
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Only admin can access.' })
-@Controller('roles')
+@ApiForbiddenResponse({ description: 'You ar not authorized' })
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
@@ -51,6 +60,7 @@ export class RolesController {
     description: 'Has not passed the validation for saving in the database',
     type: ValidationErrorDto,
   })
+  @RequirePermissions(Permission.CREATE_ROLE)
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create(createRoleDto);
   }
@@ -67,6 +77,7 @@ export class RolesController {
       items: { $ref: getSchemaPath(RoleDto) },
     },
   })
+  @RequirePermissions(Permission.READ_ROLE)
   findAll() {
     return this.rolesService.findAll();
   }
@@ -91,6 +102,7 @@ export class RolesController {
   @ApiNotFoundResponse({
     description: 'The role not found',
   })
+  @RequirePermissions(Permission.READ_ROLE)
   findOne(@Param() params: FindOneParams) {
     return this.rolesService.findOne(params.roleId);
   }
@@ -115,6 +127,7 @@ export class RolesController {
   @ApiNotFoundResponse({
     description: 'The role not found',
   })
+  @RequirePermissions(Permission.UPDATE_ROLE)
   update(@Param() params: FindOneParams, @Body() updateRoleDto: UpdateRoleDto) {
     return this.rolesService.update(params.roleId, updateRoleDto);
   }
@@ -140,7 +153,21 @@ export class RolesController {
   @ApiNotFoundResponse({
     description: 'The role not found',
   })
+  @RequirePermissions(Permission.DELETE_ROLE)
   remove(@Param() params: FindOneParams) {
     return this.rolesService.remove(params.roleId);
+  }
+
+  @Patch(':roleId/update-permissions')
+  @ApiOperation({ summary: 'Update the list of permissions' })
+  @RequirePermissions(Permission.UPDATE_ROLE_PERMISSIONS)
+  updatePermissions(
+    @Param() params: FindOneParams,
+    @Body() updatePermissionsDto: UpdatePermissionsDto
+  ) {
+    return this.rolesService.updatePermissions(
+      params.roleId,
+      updatePermissionsDto
+    );
   }
 }
