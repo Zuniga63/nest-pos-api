@@ -16,10 +16,8 @@ export class PermissionsGuards implements CanActivate {
 
     if (!requiredPermissions) return true;
 
-    const req = contex.switchToHttp().getRequest();
     const { user } = contex.switchToHttp().getRequest();
 
-    console.log(req, user, Object.keys(user));
     if (user && (user as User).isAdmin) return true;
 
     if (user.role && user.role.permissions?.length > 0) {
