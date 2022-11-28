@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +16,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiExtraModels,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -29,11 +31,19 @@ import { FindOneParams } from './dto/find-one-params.dto';
 import { AddRoleParams } from './dto/add-role-params.dto';
 import { UserWithFullRoleDto } from './dto/user-with-full-role.dto';
 import { UserWithRoleDto } from './dto/user-with-role.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PermissionsGuards } from '../auth/guards/permissions.guard';
+import { RequirePermissions } from '../auth/decorators/required-permissions.decorator';
+import { Permission } from '../auth/permission.enum';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard, PermissionsGuards)
 @ApiTags('Users')
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Only admin can use this end point.' })
+@ApiForbiddenResponse({
+  description: 'Only user with the permissions can acces to this end points.',
+})
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -41,6 +51,7 @@ export class UsersController {
   // CREATE A NEW USR
   // ------------------------------------------------------------------------------------
   @Post()
+  @RequirePermissions(Permission.CREATE_NEW_USER)
   @ApiOperation({
     summary: 'Create new user.',
     description: 'This end point create a new user in the database.',
@@ -73,6 +84,7 @@ export class UsersController {
   // GET ALL USERS
   // ------------------------------------------------------------------------------------
   @Get()
+  @RequirePermissions(Permission.READ_USERS)
   @ApiOperation({
     summary: 'Get all users',
     description: 'This end point get all users with role sort by name',
@@ -99,6 +111,7 @@ export class UsersController {
   // GET ONE USER
   // ------------------------------------------------------------------------------------
   @Get(':userId')
+  @RequirePermissions(Permission.READ_USER)
   @ApiOperation({
     summary: 'Get one user by ID',
     description: 'This end recover the info of one user',
@@ -125,6 +138,7 @@ export class UsersController {
   // UPDATE USER
   // ------------------------------------------------------------------------------------
   @Patch(':userId')
+  @RequirePermissions(Permission.UPDATE_USER)
   @ApiOperation({
     summary: 'Update user',
     description: 'This end point update the name and email.',
@@ -153,6 +167,7 @@ export class UsersController {
   // DELETE USER
   // ------------------------------------------------------------------------------------
   @Delete(':userId')
+  @RequirePermissions(Permission.DELETE_USER)
   @ApiOperation({
     summary: 'Delete user',
     description:
@@ -179,6 +194,7 @@ export class UsersController {
   // ADD ROLE TO USER
   // ------------------------------------------------------------------------------------
   @Patch(':userId/add-role/:roleId')
+  @RequirePermissions(Permission.UPDATE_USER_ROLE)
   @ApiOperation({
     summary: 'Add role to user',
     description: 'This end point add role to user',
@@ -210,6 +226,7 @@ export class UsersController {
   // REMOVE ROLE TO USER
   // ------------------------------------------------------------------------------------
   @Patch(':userId/remove-role/:roleId')
+  @RequirePermissions(Permission.UPDATE_USER_ROLE)
   @ApiOperation({
     summary: 'Remove role to user',
     description: 'This end point remove role to user and update the role',
