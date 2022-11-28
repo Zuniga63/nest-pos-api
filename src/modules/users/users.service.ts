@@ -23,7 +23,7 @@ export class UsersService {
     });
 
     const { password: _, ...result } = user.toObject();
-    return { user: result };
+    return result;
   }
 
   async findAll() {
@@ -41,7 +41,7 @@ export class UsersService {
       .select('-password')
       .populate('role', '-users');
 
-    if (!user) return new NotFoundException('Usuario no encontrado');
+    if (!user) throw new NotFoundException('Usuario no encontrado');
 
     return user;
   }
@@ -54,22 +54,23 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .populate<{ role: RoleDocument }>('role', 'name')
       .select('-password');
-    if (!user) return new NotFoundException('Usuario no encontrado');
+    if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    return { user };
+    return user;
   }
 
   async remove(id: string) {
     const user = await this.userModel.findByIdAndDelete(id).select('-password');
-    if (!user) return new NotFoundException('Usuario no encontrado');
+    if (!user) throw new NotFoundException('Usuario no encontrado');
 
     if (user.role) {
       await this.roleModel.findByIdAndUpdate(user.role, {
         $pull: { users: user._id },
       });
     }
-    return { user };
+    return user;
   }
 
   async addRole(userId: string, roleId: string) {
@@ -83,7 +84,7 @@ export class UsersService {
       if (userExists) message = 'El rol no existe o fue eliminado.';
       else if (roleExists) message = 'El usuario no existe o fue eliminado.';
 
-      return new NotFoundException(message);
+      throw new NotFoundException(message);
     }
 
     const [role, user] = await Promise.all([

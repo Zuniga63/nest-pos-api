@@ -8,8 +8,8 @@ export class UserDto {
   @ApiProperty({ example: 'Jhon Doe' })
   name: string;
 
-  @ApiProperty({ example: { id: '61d9cfbf17ed7311c4b3e485', name: 'Admin' } })
-  role?: object;
+  @ApiProperty({ example: '61d9cfbf17ed7311c4b3e485' })
+  role?: string;
 
   @ApiProperty({ example: 'jhondoe@example.com' })
   email: string;

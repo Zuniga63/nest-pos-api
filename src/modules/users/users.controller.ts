@@ -27,6 +27,8 @@ import { UserDto } from './dto/user.dto';
 import ValidationErrorDto from 'src/dto/validation-error.dto';
 import { FindOneParams } from './dto/find-one-params.dto';
 import { AddRoleParams } from './dto/add-role-params.dto';
+import { UserWithFullRoleDto } from './dto/user-with-full-role.dto';
+import { UserWithRoleDto } from './dto/user-with-role.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -62,8 +64,9 @@ export class UsersController {
     description: 'Has not passed the validation for saving in the database',
     type: ValidationErrorDto,
   })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const newUser = await this.usersService.create(createUserDto);
+    return { user: newUser };
   }
 
   // ------------------------------------------------------------------------------------
@@ -74,15 +77,22 @@ export class UsersController {
     summary: 'Get all users',
     description: 'This end point get all users with role sort by name',
   })
+  @ApiExtraModels(UserWithRoleDto)
   @ApiOkResponse({
     description: 'List of user sort by name',
     schema: {
-      type: 'array',
-      items: { $ref: getSchemaPath(UserDto) },
+      type: 'object',
+      properties: {
+        users: {
+          type: 'array',
+          items: { $ref: getSchemaPath(UserWithRoleDto) },
+        },
+      },
     },
   })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return { users };
   }
 
   // ------------------------------------------------------------------------------------
@@ -93,20 +103,22 @@ export class UsersController {
     summary: 'Get one user by ID',
     description: 'This end recover the info of one user',
   })
+  @ApiExtraModels(UserWithFullRoleDto)
   @ApiOkResponse({
     description: 'User Info',
     schema: {
       type: 'object',
       properties: {
-        user: { $ref: getSchemaPath(UserDto) },
+        user: { $ref: getSchemaPath(UserWithFullRoleDto) },
       },
     },
   })
   @ApiNotFoundResponse({
     description: 'User not Found',
   })
-  findOne(@Param() params: FindOneParams) {
-    return this.usersService.findOne(params.userId);
+  async findOne(@Param() params: FindOneParams) {
+    const user = await this.usersService.findOne(params.userId);
+    return { user };
   }
 
   // ------------------------------------------------------------------------------------
@@ -122,18 +134,19 @@ export class UsersController {
     schema: {
       type: 'object',
       properties: {
-        user: { $ref: getSchemaPath(UserDto) },
+        userUpdated: { $ref: getSchemaPath(UserWithRoleDto) },
       },
     },
   })
   @ApiNotFoundResponse({
     description: 'User not Found',
   })
-  update(
+  async update(
     @Param() { userId }: FindOneParams,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return this.usersService.update(userId, updateUserDto);
+    const userUpdated = await this.usersService.update(userId, updateUserDto);
+    return { userUpdated };
   }
 
   // ------------------------------------------------------------------------------------
@@ -150,15 +163,16 @@ export class UsersController {
     schema: {
       type: 'object',
       properties: {
-        user: { $ref: getSchemaPath(UserDto) },
+        userDeleted: { $ref: getSchemaPath(UserDto) },
       },
     },
   })
   @ApiNotFoundResponse({
     description: 'User not Found',
   })
-  remove(@Param() params: FindOneParams) {
-    return this.usersService.remove(params.userId);
+  async remove(@Param() params: FindOneParams) {
+    const userDeleted = await this.usersService.remove(params.userId);
+    return { userDeleted };
   }
 
   // ------------------------------------------------------------------------------------
@@ -174,7 +188,7 @@ export class UsersController {
     schema: {
       type: 'object',
       properties: {
-        user: { $ref: getSchemaPath(UserDto) },
+        user: { $ref: getSchemaPath(UserWithRoleDto) },
         role: {
           type: 'object',
           properties: {
@@ -205,7 +219,7 @@ export class UsersController {
     schema: {
       type: 'object',
       properties: {
-        user: { $ref: getSchemaPath(UserDto) },
+        user: { $ref: getSchemaPath(UserWithRoleDto) },
         role: {
           type: 'object',
           properties: {
