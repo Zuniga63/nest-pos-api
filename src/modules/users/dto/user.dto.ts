@@ -20,6 +20,9 @@ export class UserDto {
   @ApiProperty({ example: true })
   isActive: boolean;
 
+  @ApiProperty({ example: false })
+  isAdmin: boolean;
+
   @ApiProperty()
   createdAt: Date;
 
