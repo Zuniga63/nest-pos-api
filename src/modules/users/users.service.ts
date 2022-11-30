@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Role, RoleDocument } from 'src/modules/roles/schemas/role.schema';
+import { IImage } from 'src/utils';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { CloudinaryPreset } from '../cloudinary/preset.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schema/user.schema';
@@ -10,7 +17,8 @@ import { User, UserDocument } from './schema/user.schema';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Role.name) private roleModel: Model<RoleDocument>
+    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
+    private cloudinaryService: CloudinaryService
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -116,5 +124,43 @@ export class UsersService {
     ]);
 
     return { role, user };
+  }
+
+  async updateProfilePhoto(userId: string, file: Express.Multer.File) {
+    let profilePhoto: IImage | undefined;
+    let lastImage: IImage | undefined;
+
+    const user = await this.userModel.findById(userId).select('-password');
+    if (!user) throw new NotFoundException('Usuario no encontrado.');
+
+    try {
+      // Save the file in the cloudinary
+      const cloundResponse = await this.cloudinaryService.uploadImage(
+        file,
+        user.name,
+        CloudinaryPreset.PROFILE_PHOTO
+      );
+
+      // Get the metadata with response
+      profilePhoto = this.cloudinaryService.getImageInfo(cloundResponse);
+      lastImage = user.profilePhoto;
+
+      // Update the user data
+      user.profilePhoto = profilePhoto;
+      await user.save({ validateBeforeSave: false });
+
+      // Delete the las image
+      if (lastImage && lastImage.publicId) {
+        await this.cloudinaryService.destroyFile(lastImage.publicId);
+      }
+    } catch (error) {
+      if (profilePhoto) {
+        await this.cloudinaryService.destroyFile(profilePhoto.publicId);
+      }
+
+      throw new BadRequestException('No se pudo cargar la imagen.');
+    }
+
+    return user;
   }
 }

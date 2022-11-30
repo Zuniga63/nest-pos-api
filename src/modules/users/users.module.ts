@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { Role, RoleSchema } from 'src/modules/roles/schemas/role.schema';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { Role, RoleSchema } from 'src/modules/roles/schemas/role.schema';
       },
     ]),
     MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
+    CloudinaryModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
