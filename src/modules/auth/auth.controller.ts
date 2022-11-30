@@ -28,6 +28,7 @@ import ValidationErrorDto from 'src/dto/validation-error.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { AuthService } from './auth.service';
+import { ChangePasswordDto } from './dto/change-password.tdo';
 import LoginUserDto from './dto/login-user.dto';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -161,5 +162,24 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'The image could not be deleted' })
   removeProfilePhoto(@Request() req: any) {
     return this.authService.removeProfilePhoto(req.user);
+  }
+  // --------------------------------------------------------------------------
+  // UPDATE PASSWORD
+  // --------------------------------------------------------------------------
+  @Patch('local/profile/change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user Password' })
+  @ApiOkResponse({ description: 'The user password was change succesfully' })
+  @ApiUnauthorizedResponse({ description: 'The password is incorrect' })
+  @ApiBadRequestResponse({
+    description: 'The new password did not pass validations',
+    type: ValidationErrorDto,
+  })
+  changePassword(
+    @Request() req: any,
+    @Body() changePasswordDto: ChangePasswordDto
+  ) {
+    return this.authService.changeProfilePassword(req.user, changePasswordDto);
   }
 }

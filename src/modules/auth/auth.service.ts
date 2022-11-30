@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/modules/users/users.service';
 import { compareSync } from 'bcrypt';
 import { User } from 'src/modules/users/schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { ChangePasswordDto } from './dto/change-password.tdo';
 
 @Injectable()
 export class AuthService {
@@ -55,5 +60,23 @@ export class AuthService {
     const userUpdated = await this.usersService.removeProfilePhoto(user.id);
 
     return { user: userUpdated };
+  }
+
+  async changeProfilePassword(
+    authUser: Omit<User, 'password'>,
+    changePasswordDto: ChangePasswordDto
+  ) {
+    const user = await this.usersService.findOneByEmail(authUser.email);
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    const passIsValid = compareSync(changePasswordDto.password, user.password);
+    if (!passIsValid) {
+      throw new UnauthorizedException('La contraseña es incorrecta');
+    }
+
+    user.password = changePasswordDto.newPassword;
+    await user.save({ validateModifiedOnly: true });
+
+    return true;
   }
 }
