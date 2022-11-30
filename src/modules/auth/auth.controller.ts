@@ -2,15 +2,21 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -23,6 +29,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { AuthService } from './auth.service';
 import LoginUserDto from './dto/login-user.dto';
+import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
@@ -105,5 +112,33 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Only auth user can access' })
   getProfile(@Request() req: any) {
     return req.user;
+  }
+
+  // --------------------------------------------------------------------------
+  // UPDATE PROFILE PHOTHO
+  // --------------------------------------------------------------------------
+  @Patch('local/profile/update-photo')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: ProfilePhotoDto })
+  @ApiOkResponse({
+    description: 'The user user info',
+    schema: {
+      type: 'object',
+      properties: {
+        user: { $ref: getSchemaPath(UserDto) },
+      },
+    },
+  })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiBadRequestResponse({ description: 'The image can not uploaded' })
+  async updateProfilePhoto(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() req: any
+  ) {
+    const user = req.user;
+    return this.authService.updateProfilePhoto(user, file);
   }
 }

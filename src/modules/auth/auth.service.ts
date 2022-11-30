@@ -39,4 +39,15 @@ export class AuthService {
     const user = await this.usersService.create(createUserDto);
     return this.login(user);
   }
+
+  async updateProfilePhoto(
+    user: Omit<User, 'password'>,
+    file: Express.Multer.File
+  ) {
+    const userUpdated = await this.usersService.updateProfilePhoto(
+      user.id,
+      file
+    );
+    return { user: userUpdated };
+  }
 }
