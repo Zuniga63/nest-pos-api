@@ -50,4 +50,10 @@ export class AuthService {
     );
     return { user: userUpdated };
   }
+
+  async removeProfilePhoto(user: Omit<User, 'password'>) {
+    const userUpdated = await this.usersService.removeProfilePhoto(user.id);
+
+    return { user: userUpdated };
+  }
 }

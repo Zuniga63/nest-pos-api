@@ -141,4 +141,25 @@ export class AuthController {
     const user = req.user;
     return this.authService.updateProfilePhoto(user, file);
   }
+  // --------------------------------------------------------------------------
+  // DELETE PROFILE PHOTO
+  // --------------------------------------------------------------------------
+  @Patch('local/profile/remove-photo')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete profile photo' })
+  @ApiOkResponse({
+    description: 'The user user info',
+    schema: {
+      type: 'object',
+      properties: {
+        user: { $ref: getSchemaPath(UserDto) },
+      },
+    },
+  })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiBadRequestResponse({ description: 'The image could not be deleted' })
+  removeProfilePhoto(@Request() req: any) {
+    return this.authService.removeProfilePhoto(req.user);
+  }
 }

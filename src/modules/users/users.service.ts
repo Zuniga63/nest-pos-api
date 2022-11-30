@@ -163,4 +163,22 @@ export class UsersService {
 
     return user;
   }
+
+  async removeProfilePhoto(userId: string) {
+    const user = await this.userModel.findById(userId).select('-password');
+    if (!user) throw new NotFoundException('Uusario no encontrado');
+
+    try {
+      const { profilePhoto } = user;
+      if (profilePhoto && profilePhoto.publicId) {
+        user.profilePhoto = undefined;
+        await this.cloudinaryService.destroyFile(profilePhoto.publicId);
+        await user.save({ validateBeforeSave: false });
+      }
+
+      return user;
+    } catch (error) {
+      throw new BadRequestException('No se pudo eliminar la foto de perfil');
+    }
+  }
 }
