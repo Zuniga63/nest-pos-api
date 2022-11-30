@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ImageDto } from 'src/dto/image.dto';
 import { IImage } from 'src/utils';
 
 export class UserDto {
@@ -14,7 +15,7 @@ export class UserDto {
   @ApiProperty({ example: 'jhondoe@example.com' })
   email: string;
 
-  @ApiProperty({ deprecated: true })
+  @ApiProperty({ type: ImageDto })
   profilePhoto?: IImage;
 
   @ApiProperty({ example: true })
