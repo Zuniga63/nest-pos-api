@@ -9,12 +9,14 @@ import { User } from 'src/modules/users/schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ChangePasswordDto } from './dto/change-password.tdo';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private mailService: MailService
   ) {}
 
   async validateUser(
@@ -40,8 +42,15 @@ export class AuthService {
     return { user, access_token: this.createAccessToken(user) };
   }
 
+  async sendConfirmEmail(user: Omit<User, 'password'>) {
+    const token = Math.floor(1000 + Math.random() * 9000).toString();
+    await this.mailService.sendUserConfirmation(user, token);
+  }
+
   async signup(createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
+    await this.sendConfirmEmail(user);
+
     return this.login(user);
   }
 
