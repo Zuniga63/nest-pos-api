@@ -1,9 +1,10 @@
+# Nestjs Auth Template
+
+This project was built using nestjs for managing users, roles and permissions and serves as a basis for building other projects.
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
@@ -19,55 +20,79 @@
     <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
   <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Diagram ER
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+![BasicAuth drawio](https://user-images.githubusercontent.com/50376585/204916848-a2c66ad2-73ef-455a-bc25-b2638033cb79.svg)
 
 ## Installation
 
-```bash
-$ npm install
-```
+This project uses pnpm as code handler.
+
+1. Clone this repository
+
+   ```bash
+   git clone https://github.com/Zuniga63/nest-auth-template.git
+   ```
+
+2. Install packages
+
+   ```bash
+   pnpm install
+   ```
+
+3. Copy the .env.example
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Enter the environment variables related to the database, secret key, cloudinary credentials and mailing data.
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ pnpm run start
 
 # watch mode
-$ npm run start:dev
+$ pnpm run start:dev
 
 # production mode
-$ npm run start:prod
+$ pnpm run start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ pnpm run test
 
 # e2e tests
-$ npm run test:e2e
+$ pnpm run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ pnpm run test:cov
 ```
 
-## Support
+## Documentation
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+End point documentation can be accessed at **http://localhost:${PORT}/api-docs/**
 
-## Stay in touch
+![image](https://user-images.githubusercontent.com/50376585/204919366-c911b9a0-6b7a-43f7-a5d1-b671556c1728.png)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The general config of swagger find in [`src/config/swagger.config.ts`](src/config/swagger.config.ts)
 
-## License
+## Entities
 
-Nest is [MIT licensed](LICENSE).
+- **Users**: Entity in charge of using the platform and to which a role can be asigned. [Module](src/modules/users)
+
+- [**Role**](src/modules/roles): Entities to which [permits](src/modules/auth/permission.enum.ts) may be assigned
+
+**Note**: The first user created on the platform is assigned the super administrator property in true and by default disables all platform guards.
+
+## Other Modules
+
+- [**Cloudinary**](src/modules/cloudinary): Module in charge of managing the connection to the file cloud Cloudinary
+
+- [**Mail**](src/modules/mail): Module in charge of sending e-mails.

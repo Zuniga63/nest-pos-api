@@ -1,8 +1,8 @@
 import { DocumentBuilder } from '@nestjs/swagger';
 
 export default new DocumentBuilder()
-  .setTitle('Bar and Restaurant')
-  .setDescription('This is an API for managment a bar or a restaurant')
+  .setTitle('Nest Auth Template')
+  .setDescription('This is an API for managment the auth users')
   .setVersion('1.0')
   .addTag('Auth', 'End point for register and login')
   .addTag('Users', 'Route for user administration')
