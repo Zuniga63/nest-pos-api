@@ -22,11 +22,11 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    // *The password encrytion ocurrs in the pre.save hook of the model.
-    const isFirstUser = (await this.userModel.count()) <= 0;
+    const existSuperAdmin = await this.userModel.exists({ isAdmin: true });
 
+    // *The password encrytion ocurrs in the pre.save hook of the model.
     const user = await this.userModel.create({
-      isAdmin: isFirstUser,
+      isAdmin: !Boolean(existSuperAdmin),
       ...createUserDto,
     });
 
