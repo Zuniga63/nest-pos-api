@@ -194,7 +194,7 @@ export class UsersController {
   // ADD ROLE TO USER
   // ------------------------------------------------------------------------------------
   @Patch(':userId/add-role/:roleId')
-  @RequirePermissions(Permission.UPDATE_USER_ROLE)
+  @RequirePermissions(Permission.ADD_ROLE_TO_USER)
   @ApiOperation({
     summary: 'Add role to user',
     description: 'This end point add role to user',
@@ -226,7 +226,7 @@ export class UsersController {
   // REMOVE ROLE TO USER
   // ------------------------------------------------------------------------------------
   @Patch(':userId/remove-role/:roleId')
-  @RequirePermissions(Permission.UPDATE_USER_ROLE)
+  @RequirePermissions(Permission.REMOVE_ROLE_TO_USER)
   @ApiOperation({
     summary: 'Remove role to user',
     description: 'This end point remove role to user and update the role',

@@ -24,6 +24,7 @@ import {
   ApiUnprocessableEntityResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
+import permissionGroupConfig from 'src/config/permissionGroup.config';
 import ValidationErrorDto from 'src/dto/validation-error.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserDto } from '../users/dto/user.dto';
@@ -181,5 +182,44 @@ export class AuthController {
     @Body() changePasswordDto: ChangePasswordDto
   ) {
     return this.authService.changeProfilePassword(req.user, changePasswordDto);
+  }
+  // --------------------------------------------------------------------------
+  // GET PERMISSIONS
+  // --------------------------------------------------------------------------
+  @Get('/permissions')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the permission list' })
+  @ApiOkResponse({
+    description: 'Permission groups',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', example: 1 },
+          name: { type: 'string', example: 'Permission group name' },
+          description: {
+            type: 'string',
+            example: 'Optional description of permission group',
+          },
+          permissions: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'number', example: 1 },
+                name: { type: 'string', example: 'Permision Name or action' },
+                key: { type: 'string', example: 'PERMISSION_KEY' },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'Only user auth can access' })
+  permissionList() {
+    return permissionGroupConfig;
   }
 }

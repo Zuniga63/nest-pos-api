@@ -10,9 +10,8 @@ export enum Permission {
   // USERS PERMISSIONS
   // ---------------------------------------------------------------
   CREATE_NEW_USER = 'CREATE_NEW_USER',
-  UPDATE_USER = 'UPDATE_USER',
   READ_USERS = 'READ_USERS',
+  UPDATE_USER = 'UPDATE_USER',
   READ_USER = 'READ_USER',
   DELETE_USER = 'DELETE_USER',
-  UPDATE_USER_ROLE = 'UPDATE_USER_ROLE',
 }
