@@ -13,6 +13,8 @@ mongoose.set('toJSON', { virtuals: true });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port = process.env.PORT || 3000;
+  const env = process.env.APP_ENV || 'local';
 
   // Swagger COnfig
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -21,6 +23,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe(validationConfig));
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(port);
+
+  if (env === 'local') {
+    console.log(`App runing on: https://localhost:${port}`);
+  }
 }
 bootstrap();
