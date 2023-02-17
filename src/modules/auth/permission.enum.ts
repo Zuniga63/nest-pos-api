@@ -14,4 +14,8 @@ export enum Permission {
   UPDATE_USER = 'UPDATE_USER',
   READ_USER = 'READ_USER',
   DELETE_USER = 'DELETE_USER',
+  // ---------------------------------------------------------------
+  // SUPER ADMIN PERMISSIONS
+  // ---------------------------------------------------------------
+  INSTALL_CLOUD_PRESETS = 'INSTALL_CLOUD_PRESETS',
 }

@@ -2,10 +2,13 @@ import { v2 as cloudinary } from 'cloudinary';
 
 export default async function createProfilePhotosPreset(
   folder = 'profile_photos'
-): Promise<void> {
+) {
+  const presetName = 'user_profile_preset2';
+  let message = '';
+
   try {
     const preset = await cloudinary.api.create_upload_preset({
-      name: 'user_profile_preset2',
+      name: presetName,
       folder,
       resource_type: 'image',
       allowed_formats: 'jpg, png, gif, webp, bmp, jpe, jpeg',
@@ -24,8 +27,15 @@ export default async function createProfilePhotosPreset(
       ],
     });
 
-    console.log(preset);
+    message = preset.message;
   } catch (error: any) {
-    console.error(error.error.message);
+    if (error.error && typeof error.error.message === 'string') {
+      message = error.error.message;
+    }
   }
+
+  return {
+    name: presetName,
+    message,
+  };
 }
