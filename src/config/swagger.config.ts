@@ -7,5 +7,6 @@ export default new DocumentBuilder()
   .addTag('Auth', 'End point for register and login')
   .addTag('Users', 'Route for user administration')
   .addTag('Roles', 'Routes for role administration')
+  .addTag('Cashboxes', 'Routes for boxes administration')
   .addBearerAuth()
   .build();
