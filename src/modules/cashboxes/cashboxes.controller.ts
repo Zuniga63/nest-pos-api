@@ -299,24 +299,60 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   @Post('/main/transactions')
   @RequirePermissions(Permission.ADD_MAIN_TRANSACTION)
+  @ApiOperation({
+    summary: 'Add transaction to main box',
+  })
+  @ApiCreatedResponse({
+    description:
+      'The transaction was success create, this transaction response a cashbox object',
+    type: TransactionDto,
+  })
+  @ApiBadRequestResponse({
+    description:
+      'Some of the submitted field have not passed primary validation',
+    type: ValidationErrorDto,
+  })
   storeMainTransaction(@Body() createTransactionDto: CreateTransactionDto) {
     return this.cashboxesService.storeMainTransaction(createTransactionDto);
   }
 
   @RequirePermissions(Permission.READ_MAIN_TRANSACTIONS)
   @Get('/main/transactions')
+  @ApiOperation({
+    summary: 'List of transaction',
+    description: 'List of transaction without transfers',
+  })
+  @ApiOkResponse({
+    description:
+      'List of transaction, the transaction populate de name of cashbox',
+    type: [TransactionDto],
+  })
   findAllTransaction() {
     return this.cashboxesService.findAllTransactions();
   }
 
   @RequirePermissions(Permission.DELETE_MAIN_TRANSACTION)
   @Delete('/main/transactions/:transactionId')
+  @ApiOperation({
+    summary: 'Delete a main transaction with ID',
+  })
+  @ApiOkResponse({
+    description: 'return a deleted transaction',
+    type: TransactionDto,
+  })
   deleteMainTransaction(@Param('transactionId') transactionId: string) {
     return this.cashboxesService.deleteMainTransaction(transactionId);
   }
 
   @Get('/main/balance')
   @RequirePermissions(Permission.GET_MAIN_BOX_BALANCE)
+  @ApiOperation({
+    summary: 'Return the global balance',
+  })
+  @ApiOkResponse({
+    description: 'The sum of all amount transactions',
+    type: Number,
+  })
   getGlobalBalance() {
     return this.cashboxesService.getGlobalBalance();
   }
