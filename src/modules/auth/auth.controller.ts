@@ -27,7 +27,10 @@ import {
 import permissionGroupConfig from 'src/config/permissionGroup.config';
 import ValidationErrorDto from 'src/dto/validation-error.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { UserWithRoleDto } from '../users/dto/user-with-role.dto';
 import { UserDto } from '../users/dto/user.dto';
+import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.tdo';
 import LoginUserDto from './dto/login-user.dto';
@@ -38,7 +41,10 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService
+  ) {}
 
   // --------------------------------------------------------------------------
   // SIGN UP
@@ -102,6 +108,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('local/profile')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the profile info' })
   @ApiOkResponse({
     description: 'The user user info',
     schema: {
@@ -114,6 +121,39 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Only auth user can access' })
   getProfile(@Request() req: any) {
     return req.user;
+  }
+
+  // --------------------------------------------------------------------------
+  // UPDATE PROFILE
+  // --------------------------------------------------------------------------
+  @UseGuards(JwtAuthGuard)
+  @Patch('/local/profile')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Update the curren profile',
+    description: 'This end point update the name and email.',
+  })
+  @ApiOkResponse({
+    description: 'The updated user',
+    schema: {
+      type: 'object',
+      properties: {
+        userUpdated: { $ref: getSchemaPath(UserWithRoleDto) },
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: 'User not Found',
+  })
+  async updateProfile(
+    @Body() updateUserDto: UpdateUserDto,
+    @Request() req: any
+  ) {
+    const userUpdated = await this.usersService.update(
+      req.user.id,
+      updateUserDto
+    );
+    return { userUpdated };
   }
 
   // --------------------------------------------------------------------------

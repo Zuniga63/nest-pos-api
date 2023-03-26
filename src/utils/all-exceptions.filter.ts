@@ -15,6 +15,13 @@ interface MongoError {
   keyValue: { [key: string]: any };
 }
 
+export interface IValidationError {
+  [key: string]: {
+    message: string;
+    value?: any;
+  };
+}
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
@@ -49,7 +56,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const key = Object.keys((exception as MongoError).keyValue)[0];
       const value = (exception as MongoError).keyValue[key];
 
-      const error: { [key: string]: any } = {};
+      const error: IValidationError = {};
       error[key] = {
         message: 'Ya existe en la base de datos',
         value,

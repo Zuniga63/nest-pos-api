@@ -55,7 +55,7 @@ export class CloudinaryService {
   }
 
   createPresets() {
-    createProfilePhotosPreset();
+    return createProfilePhotosPreset();
   }
 
   async destroyFile(publicId: string) {

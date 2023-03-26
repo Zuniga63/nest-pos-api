@@ -3,6 +3,7 @@ import { Permission } from 'src/modules/auth/permission.enum';
 export enum PermissionGroupKeys {
   roles,
   users,
+  cashboxes,
 }
 
 export default [
@@ -95,6 +96,66 @@ export default [
         id: 4,
         name: 'Eliminar',
         key: Permission.DELETE_USER,
+      },
+    ],
+  },
+  // --------------------------------------------------------------------------
+  // CASHBOX PERMISSIONS
+  // --------------------------------------------------------------------------
+  {
+    id: PermissionGroupKeys.cashboxes,
+    name: 'Cajas',
+    description: 'Permisos para la adminsitración de las cajas',
+    permissions: [
+      // CREATE
+      {
+        id: 1,
+        name: 'Crear',
+        key: Permission.CREATE_NEW_CASHBOX,
+      },
+      // READ
+      {
+        id: 2,
+        name: 'Ver',
+        key: Permission.READ_CASHBOX,
+      },
+      // UPDATE
+      {
+        id: 3,
+        name: 'Editar',
+        key: Permission.UPDATE_CASHBOX,
+      },
+      // DELETE
+      {
+        id: 4,
+        name: 'Eliminar',
+        key: Permission.DELETE_CASHBOX,
+      },
+      // OPEN CASHBOX
+      {
+        id: 5,
+        name: 'Abrir caja',
+        key: Permission.OPEN_CASHBOX,
+      },
+      {
+        id: 6,
+        name: 'Cerrar caja',
+        key: Permission.CLOSE_CASHBOX,
+      },
+      {
+        id: 7,
+        name: 'Agregar Transacción',
+        key: Permission.ADD_TRANSACTION,
+      },
+      {
+        id: 8,
+        name: 'Eliminar Transacción',
+        key: Permission.DELETE_TRANSACTION,
+      },
+      {
+        id: 9,
+        name: 'Transferencia de fondos',
+        key: Permission.CASH_TRANSFER,
       },
     ],
   },
