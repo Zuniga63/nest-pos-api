@@ -10,7 +10,7 @@ specifiers:
   '@nestjs/core': ^9.3.12
   '@nestjs/jwt': ^9.0.0
   '@nestjs/mongoose': ^9.2.2
-  '@nestjs/passport': ^9.0.0
+  '@nestjs/passport': ^9.0.3
   '@nestjs/platform-express': ^9.3.12
   '@nestjs/schematics': ^9.0.0
   '@nestjs/swagger': ^6.2.1
@@ -66,7 +66,7 @@ dependencies:
   '@nestjs/core': 9.3.12_kkjqn6amr2qufoihv6s3juz5cy
   '@nestjs/jwt': 9.0.0_@nestjs+common@9.3.12
   '@nestjs/mongoose': 9.2.2_7wmssw3qflisny7a5pzqb47mlu
-  '@nestjs/passport': 9.0.0_ajy2slul3age3kopk444psnhqq
+  '@nestjs/passport': 9.0.3_ajy2slul3age3kopk444psnhqq
   '@nestjs/platform-express': 9.3.12_ge4qplnzbmfyi5znl534zhtkn4
   '@nestjs/swagger': 6.2.1_56wskrocvqeup2a4dyvgnvm62u
   bcrypt: 5.1.0
@@ -2055,8 +2055,8 @@ packages:
       rxjs: 7.5.7
     dev: false
 
-  /@nestjs/passport/9.0.0_ajy2slul3age3kopk444psnhqq:
-    resolution: {integrity: sha512-Gnh8n1wzFPOLSS/94X1sUP4IRAoXTgG4odl7/AO5h+uwscEGXxJFercrZfqdAwkWhqkKWbsntM3j5mRy/6ZQDA==}
+  /@nestjs/passport/9.0.3_ajy2slul3age3kopk444psnhqq:
+    resolution: {integrity: sha512-HplSJaimEAz1IOZEu+pdJHHJhQyBOPAYWXYHfAPQvRqWtw4FJF1VXl1Qtk9dcXQX1eKytDtH+qBzNQc19GWNEg==}
     peerDependencies:
       '@nestjs/common': ^8.0.0 || ^9.0.0
       passport: ^0.4.0 || ^0.5.0 || ^0.6.0
