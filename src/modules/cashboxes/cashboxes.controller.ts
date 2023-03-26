@@ -53,7 +53,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // CRATE CASHBOX
   // ------------------------------------------------------------------------------------
-  @Post()
+  @Post('/minors')
   @RequirePermissions(Permission.CREATE_NEW_CASHBOX)
   @ApiOperation({
     summary: 'Create New Cashbox',
@@ -80,7 +80,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // GET ALL CASHBOX
   // ------------------------------------------------------------------------------------
-  @Get()
+  @Get('/minors')
   @RequirePermissions(Permission.READ_CASHBOX)
   @ApiOperation({
     summary: 'Get all cashbox',
@@ -95,7 +95,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // GET ONE CASHBOX
   // ------------------------------------------------------------------------------------
-  @Get(':id')
+  @Get('/minors/:id')
   @RequirePermissions(Permission.READ_CASHBOX)
   @ApiOperation({ summary: 'Get cashbox by Id' })
   @ApiOkResponse({ type: CashboxWithAll })
@@ -111,7 +111,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // UPDATE CASHBOX BY ID
   // ------------------------------------------------------------------------------------
-  @Patch(':id')
+  @Patch('/minors/:id')
   @RequirePermissions(Permission.UPDATE_CASHBOX)
   @ApiOperation({ summary: 'Update cashbox by Id' })
   @ApiOkResponse({ description: 'Ok', type: CashboxDto })
@@ -140,7 +140,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // DELETE CASHBOX BY ID
   // ------------------------------------------------------------------------------------
-  @Delete(':id')
+  @Delete('/minors/:id')
   @RequirePermissions(Permission.DELETE_CASHBOX)
   @ApiOkResponse({ description: 'Ok', type: CashboxDto })
   @ApiOperation({ summary: 'Delete cashbox by Id' })
@@ -157,7 +157,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // OPEN CASHBOX
   // ------------------------------------------------------------------------------------
-  @Patch(':id/open-box')
+  @Patch('/minors/:id/open-box')
   @RequirePermissions(Permission.OPEN_CASHBOX)
   @ApiOperation({
     summary: 'Open cashbox with a base',
@@ -185,7 +185,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // CLOSE CASHBOX
   // ------------------------------------------------------------------------------------
-  @Patch(':id/close-box')
+  @Patch('/minors/:id/close-box')
   @RequirePermissions(Permission.CLOSE_CASHBOX)
   @ApiOperation({
     summary: 'Close the current box',
@@ -217,7 +217,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // CREATE TRANSACTIONS
   // ------------------------------------------------------------------------------------
-  @Post(':id/transactions')
+  @Post('/minors/:id/transactions')
   @RequirePermissions(Permission.ADD_TRANSACTION)
   @ApiOperation({
     summary: 'Add transaction to the cashbox',
@@ -246,7 +246,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // DELETE TRANSACTIONS
   // ------------------------------------------------------------------------------------
-  @Delete(':boxId/transactions/:transactionId')
+  @Delete('/minors/:boxId/transactions/:transactionId')
   @RequirePermissions(Permission.DELETE_TRANSACTION)
   @ApiOperation({
     summary: 'Delete transaction to the cashbox',
@@ -275,7 +275,7 @@ export class CashboxesController {
   // ------------------------------------------------------------------------------------
   // CASH TRANSFER
   // ------------------------------------------------------------------------------------
-  @Post('/cash-transfer')
+  @Post('/minors/cash-transfer')
   @RequirePermissions(Permission.CASH_TRANSFER)
   @ApiOperation({ summary: 'Cash transfer to other box' })
   @ApiOkResponse({ description: 'The cash transfer was successfully' })
@@ -292,5 +292,32 @@ export class CashboxesController {
     @Req() { user }: Request
   ) {
     return this.cashboxesService.cashTransfer(cashTransferDto, user as User);
+  }
+
+  // ------------------------------------------------------------------------------------
+  // MAIN BOX
+  // ------------------------------------------------------------------------------------
+  @Post('/main/transactions')
+  @RequirePermissions(Permission.ADD_MAIN_TRANSACTION)
+  storeMainTransaction(@Body() createTransactionDto: CreateTransactionDto) {
+    return this.cashboxesService.storeMainTransaction(createTransactionDto);
+  }
+
+  @RequirePermissions(Permission.READ_MAIN_TRANSACTIONS)
+  @Get('/main/transactions')
+  findAllTransaction() {
+    return this.cashboxesService.findAllTransactions();
+  }
+
+  @RequirePermissions(Permission.DELETE_MAIN_TRANSACTION)
+  @Delete('/main/transactions/:transactionId')
+  deleteMainTransaction(@Param('transactionId') transactionId: string) {
+    return this.cashboxesService.deleteMainTransaction(transactionId);
+  }
+
+  @Get('/main/balance')
+  @RequirePermissions(Permission.GET_MAIN_BOX_BALANCE)
+  getGlobalBalance() {
+    return this.cashboxesService.getGlobalBalance();
   }
 }

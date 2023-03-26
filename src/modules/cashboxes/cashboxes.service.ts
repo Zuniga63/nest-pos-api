@@ -656,4 +656,57 @@ export class CashboxesService {
 
     return transferReport;
   }
+
+  // --------------------------------------------------------------------------
+  // TRANSACTIONS
+  // --------------------------------------------------------------------------
+
+  async findAllTransactions() {
+    const transactionDocuments = await this.transactionModel
+      .find({
+        isTransfer: null,
+      })
+      .sort('transactionDate')
+      .populate('cashbox', 'name');
+
+    let balance = 0;
+    return transactionDocuments.map((document) => {
+      balance += document.amount;
+      return { ...document.toObject(), balance };
+    });
+  }
+
+  async getGlobalBalance() {
+    const sums = await this.transactionModel
+      .aggregate<{ _id: null; balance: number }>()
+      .group({ _id: null, balance: { $sum: '$amount' } });
+
+    const globalSum = sums.find((item) => item._id === null);
+    if (globalSum) {
+      return globalSum.balance;
+    }
+
+    return 0;
+  }
+
+  async deleteMainTransaction(transactionId: string) {
+    const transaction = await this.transactionModel.findByIdAndDelete(
+      transactionId
+    );
+    if (!transaction) throw new NotFoundException();
+
+    return transaction;
+  }
+
+  async storeMainTransaction(createTransactionDto: CreateTransactionDto) {
+    // Create transaction
+    const transactionDate = dayjs(createTransactionDto.transactionDate);
+
+    const transaction = await this.transactionModel.create({
+      ...createTransactionDto,
+      transactionDate,
+    });
+
+    return transaction;
+  }
 }
