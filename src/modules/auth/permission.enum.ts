@@ -25,6 +25,7 @@ export enum Permission {
   CLOSE_CASHBOX = 'CLOSE_CASHBOX',
   ADD_TRANSACTION = 'ADD_TRANSACTION',
   DELETE_TRANSACTION = 'DELETE_TRANSACTION',
+  CASH_TRANSFER = 'CASH_TRANSFER',
   // ---------------------------------------------------------------
   // SUPER ADMIN PERMISSIONS
   // ---------------------------------------------------------------

@@ -13,6 +13,10 @@ import {
   CashClosingRecordSchema,
 } from './schemas/cash-closing-record.schema';
 import { User, UserSchema } from '../users/schema/user.schema';
+import {
+  CashTransfer,
+  CashTransferSchema,
+} from './schemas/cash-transfer.schema';
 
 @Module({
   imports: [
@@ -20,6 +24,7 @@ import { User, UserSchema } from '../users/schema/user.schema';
       { name: Cashbox.name, schema: CashboxSchema },
       { name: CashboxTransaction.name, schema: CashboxTransactionSchema },
       { name: CashClosingRecord.name, schema: CashClosingRecordSchema },
+      { name: CashTransfer.name, schema: CashTransferSchema },
       { name: User.name, schema: UserSchema },
     ]),
   ],

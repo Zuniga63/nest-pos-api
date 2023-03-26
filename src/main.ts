@@ -13,6 +13,7 @@ mongoose.set('toJSON', { virtuals: true });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   const port = process.env.PORT || 3000;
   const env = process.env.APP_ENV || 'local';
 

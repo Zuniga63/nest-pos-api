@@ -29,6 +29,7 @@ import { PermissionsGuards } from '../auth/guards/permissions.guard';
 import { Permission } from '../auth/permission.enum';
 import { User } from '../users/schema/user.schema';
 import { CashboxesService } from './cashboxes.service';
+import { CashTransferDto } from './dto/cash-transfer.dto';
 import CashboxWithAll from './dto/cashbox-with-all.dto';
 import { CashboxDto } from './dto/cashbox.dto';
 import { CloseBoxDto } from './dto/close-box.dto';
@@ -269,5 +270,27 @@ export class CashboxesController {
       transactionId,
       req.user as User
     );
+  } //./deleteTransaction
+
+  // ------------------------------------------------------------------------------------
+  // CASH TRANSFER
+  // ------------------------------------------------------------------------------------
+  @Post('/cash-transfer')
+  @RequirePermissions(Permission.CASH_TRANSFER)
+  @ApiOperation({ summary: 'Cash transfer to other box' })
+  @ApiOkResponse({ description: 'The cash transfer was successfully' })
+  @ApiNotFoundResponse({
+    description:
+      'The sender box or the addressee box not found or not have access to them',
+  })
+  @ApiBadRequestResponse({
+    description: 'Incorrect dates or insufficient founds',
+    type: ValidationErrorDto,
+  })
+  cashTransfer(
+    @Body() cashTransferDto: CashTransferDto,
+    @Req() { user }: Request
+  ) {
+    return this.cashboxesService.cashTransfer(cashTransferDto, user as User);
   }
 }

@@ -6,7 +6,9 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import { FilterQuery, isValidObjectId, Model, Types } from 'mongoose';
+import { IValidationError } from 'src/utils/all-exceptions.filter';
 import { User, UserDocument } from '../users/schema/user.schema';
+import { CashTransferDto } from './dto/cash-transfer.dto';
 import { CloseBoxDto } from './dto/close-box.dto';
 import { CreateCashboxDto } from './dto/create-cashbox.dto';
 import { CreateTransactionDto } from './dto/create-transation.dto';
@@ -16,6 +18,10 @@ import {
   CashClosingRecord,
   CashClosingRecordDocument,
 } from './schemas/cash-closing-record.schema';
+import {
+  CashTransfer,
+  CashTransferDocument,
+} from './schemas/cash-transfer.schema';
 import {
   CashboxTransaction,
   CashboxTransactionDocument,
@@ -30,6 +36,8 @@ export class CashboxesService {
     private transactionModel: Model<CashboxTransactionDocument>,
     @InjectModel(CashClosingRecord.name)
     private closingModel: Model<CashClosingRecordDocument>,
+    @InjectModel(CashTransfer.name)
+    private cashTransferModel: Model<CashTransferDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>
   ) {}
 
@@ -177,8 +185,11 @@ export class CashboxesService {
 
     // Update the box balance
     const box = boxDocument.toObject();
-    box.transactions.forEach((t) => {
-      box.balance += t.amount;
+
+    box.transactions = box.transactions.map((transaction) => {
+      box.balance += transaction.amount;
+      transaction.balance = box.balance;
+      return transaction;
     });
 
     return box;
@@ -310,7 +321,7 @@ export class CashboxesService {
     }
 
     await cashbox.save({ validateModifiedOnly: true });
-    cashbox.depopulate('cashier');
+    await cashbox.populate('cashier', 'name');
 
     return cashbox;
   }
@@ -473,5 +484,176 @@ export class CashboxesService {
     ]);
 
     return transaction;
+  }
+
+  // --------------------------------------------------------------------------
+  // CASHBOX TRANSFER
+  // --------------------------------------------------------------------------
+  /**
+   * Verify that IDs are differents and have a valid format.
+   * @param senderBoxId ID of cashbox sending the found
+   * @param addresseeBoxId ID of the cashbox receiving the found
+   */
+  protected validateCashTransferIds(
+    senderBoxId: string,
+    addresseeBoxId: string
+  ) {
+    const validationErrors: IValidationError = {};
+    let hasError = false;
+
+    if (senderBoxId === addresseeBoxId) {
+      validationErrors.addresseeBoxId = {
+        message: 'No se puede transferir fondos a la misma caja',
+      };
+      hasError = true;
+    } else {
+      if (!isValidObjectId(senderBoxId)) {
+        validationErrors.senderBoxId = {
+          message: 'No es una caja válida',
+          value: senderBoxId,
+        };
+
+        hasError = true;
+      }
+
+      if (!isValidObjectId(addresseeBoxId)) {
+        validationErrors.addresseeBoxId = {
+          message: 'No es una caja válida',
+          value: senderBoxId,
+        };
+
+        hasError = true;
+      }
+    }
+
+    if (hasError) {
+      throw new BadRequestException({ validationErrors });
+    }
+  }
+
+  protected async validateCashTransfer(
+    senderId: string,
+    addresseeId: string,
+    transferDate: Date,
+    transferAmount: number,
+    user: User
+  ): Promise<[CashboxDocument, CashboxDocument]> {
+    const validationErrors: IValidationError = {};
+    let senderError: string | undefined;
+    let addresseeError: string | undefined;
+
+    const senderFilter = this.buildCashboxFilter(user, senderId);
+    const addresseeFilter = this.buildCashboxFilter(user, addresseeId);
+
+    const [senderBox, addresseeBox] = await Promise.all([
+      this.cashboxModel
+        .findOne(senderFilter)
+        .populate('transactions', 'amount'),
+      this.cashboxModel.findOne(addresseeFilter),
+    ]);
+
+    if (!senderBox) {
+      senderError = 'La caja remitente no fue encontrada ';
+      senderError += 'o no tienes acceso a ella';
+    } else if (!senderBox.openBox) {
+      senderError = 'La caja que envía los fondos no está abierta';
+    } else if (dayjs(transferDate).isBefore(senderBox.openBox)) {
+      senderError = 'La fecha de la transferencia ';
+      senderError += 'es anterior a la apertura de la caja';
+    } else {
+      const amountSum = senderBox.transactions.reduce(
+        (current, { amount }) => current + amount,
+        0
+      );
+      const balance = senderBox.base + amountSum;
+
+      if (balance < transferAmount) {
+        senderError = 'Fondos insuficientes';
+      }
+    }
+
+    if (!addresseeBox) {
+      addresseeError = 'La caja destino no fue encontrada ';
+      addresseeError += 'o no tienes acceso a ella';
+    } else if (!addresseeBox.openBox) {
+      addresseeError = 'La caja que recibe los fondos no está abierta';
+    } else if (dayjs(transferDate).isBefore(addresseeBox.openBox)) {
+      addresseeError = 'La fecha de la transferencia ';
+      addresseeError += 'es anterior a la apertura de la caja';
+    }
+
+    if (senderError || addresseeError) {
+      if (senderError) {
+        validationErrors.senderBoxId.message = senderError;
+        validationErrors.senderBoxId.value = senderId;
+      }
+
+      if (addresseeError) {
+        validationErrors.addresseeBoxId.message = addresseeError;
+        validationErrors.addresseeBoxId.value = addresseeId;
+      }
+
+      throw new BadRequestException({ validationErrors });
+    }
+
+    // ! Este caso no es probable
+    if (!senderBox || !addresseeBox) {
+      throw new NotFoundException('Alguna de las cajas no fue encontrada');
+    }
+
+    return [senderBox, addresseeBox];
+  }
+
+  async cashTransfer(cashTransferDto: CashTransferDto, user: User) {
+    const { senderBoxId, addresseeBoxId, amount } = cashTransferDto;
+    const transferDate = cashTransferDto.transferDate || dayjs().toDate();
+
+    const [senderBox, addresseeBox] = await this.validateCashTransfer(
+      senderBoxId,
+      addresseeBoxId,
+      transferDate,
+      amount,
+      user
+    );
+
+    const senderTransaction = new this.transactionModel({
+      cashbox: senderBox,
+      transactionDate: transferDate,
+      description: `Transferencia de fondos: ${addresseeBox.name}`,
+      amount: amount * -1,
+    });
+
+    const addresseeTransaction = new this.transactionModel({
+      cashbox: addresseeBox,
+      transactionDate: transferDate,
+      description: `Transferencia de fondos: ${senderBox.name}`,
+      amount,
+    });
+
+    senderBox.transactions.push(senderTransaction);
+    addresseeBox.transactions.push(addresseeTransaction);
+
+    const transferReport = new this.cashTransferModel({
+      senderBox,
+      addresseeBox,
+      transferDate,
+      amount,
+      transactions: [senderTransaction, addresseeTransaction],
+    });
+
+    senderTransaction.isTransfer = transferReport;
+    addresseeTransaction.isTransfer = transferReport;
+
+    await Promise.all([
+      senderBox.save({ validateBeforeSave: false }),
+      senderTransaction.save(),
+      addresseeBox.save({ validateBeforeSave: false }),
+      addresseeTransaction.save(),
+      transferReport.save(),
+    ]);
+
+    transferReport.depopulate(['senderBox', 'addresseeBox', 'transactions']);
+
+    return transferReport;
   }
 }

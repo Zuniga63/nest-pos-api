@@ -152,6 +152,11 @@ export default [
         name: 'Eliminar Transacción',
         key: Permission.DELETE_TRANSACTION,
       },
+      {
+        id: 9,
+        name: 'Transferencia de fondos',
+        key: Permission.CASH_TRANSFER,
+      },
     ],
   },
 ];

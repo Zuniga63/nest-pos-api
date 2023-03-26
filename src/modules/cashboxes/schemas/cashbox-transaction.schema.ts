@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, HydratedDocument } from 'mongoose';
+import { CashTransfer } from './cash-transfer.schema';
 import { Cashbox } from './cashbox.schema';
 
 export type CashboxTransactionDocument = HydratedDocument<CashboxTransaction>;
@@ -24,8 +25,14 @@ export class CashboxTransaction {
   @Prop({ required: [true, 'El monto es requerido'] })
   amount: number;
 
-  @Prop({ default: false })
-  isTransfer: boolean;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'CashTransfer',
+    required: false,
+  })
+  isTransfer: CashTransfer;
+
+  balance?: number;
 }
 
 export const CashboxTransactionSchema =
