@@ -617,32 +617,32 @@ export class CashboxesService {
     );
 
     const senderTransaction = new this.transactionModel({
-      cashbox: senderBox,
+      cashbox: senderBox._id,
       transactionDate: transferDate,
       description: `Transferencia de fondos: ${addresseeBox.name}`,
       amount: amount * -1,
     });
 
     const addresseeTransaction = new this.transactionModel({
-      cashbox: addresseeBox,
+      cashbox: addresseeBox._id,
       transactionDate: transferDate,
-      description: `Transferencia de fondos: ${senderBox.name}`,
+      description: `Deposito de fondos: ${senderBox.name}`,
       amount,
     });
 
-    senderBox.transactions.push(senderTransaction);
-    addresseeBox.transactions.push(addresseeTransaction);
+    senderBox.transactions.push(senderTransaction.id);
+    addresseeBox.transactions.push(addresseeTransaction.id);
 
     const transferReport = new this.cashTransferModel({
       senderBox,
       addresseeBox,
       transferDate,
       amount,
-      transactions: [senderTransaction, addresseeTransaction],
+      transactions: [senderTransaction._id, addresseeTransaction._id],
     });
 
-    senderTransaction.isTransfer = transferReport;
-    addresseeTransaction.isTransfer = transferReport;
+    senderTransaction.isTransfer = transferReport.id;
+    addresseeTransaction.isTransfer = transferReport.id;
 
     await Promise.all([
       senderBox.save({ validateBeforeSave: false }),
@@ -652,9 +652,11 @@ export class CashboxesService {
       transferReport.save(),
     ]);
 
-    transferReport.depopulate(['senderBox', 'addresseeBox', 'transactions']);
-
-    return transferReport;
+    return {
+      senderBoxId: senderBox.id,
+      addresseeBoxId: addresseeBox.id,
+      senderTransaction: senderTransaction,
+    };
   }
 
   // --------------------------------------------------------------------------
