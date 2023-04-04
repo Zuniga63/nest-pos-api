@@ -605,7 +605,8 @@ export class CashboxesService {
   }
 
   async cashTransfer(cashTransferDto: CashTransferDto, user: User) {
-    const { senderBoxId, addresseeBoxId, amount } = cashTransferDto;
+    const { senderBoxId, addresseeBoxId, amount, description } =
+      cashTransferDto;
     const transferDate = cashTransferDto.transferDate || dayjs().toDate();
 
     const [senderBox, addresseeBox] = await this.validateCashTransfer(
@@ -615,18 +616,25 @@ export class CashboxesService {
       amount,
       user
     );
+    let senderDescription = `Transferencia de fondos a la caja ${addresseeBox.name}`;
+    let addresseeDescription = `Deposito de fondos desde la caja ${senderBox.name}`;
+
+    if (description) {
+      senderDescription += `: ${description}`;
+      addresseeDescription += `: ${description}`;
+    }
 
     const senderTransaction = new this.transactionModel({
       cashbox: senderBox._id,
       transactionDate: transferDate,
-      description: `Transferencia de fondos: ${addresseeBox.name}`,
+      description: senderDescription,
       amount: amount * -1,
     });
 
     const addresseeTransaction = new this.transactionModel({
       cashbox: addresseeBox._id,
       transactionDate: transferDate,
-      description: `Deposito de fondos: ${senderBox.name}`,
+      description: addresseeDescription,
       amount,
     });
 

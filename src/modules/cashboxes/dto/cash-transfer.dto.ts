@@ -27,14 +27,19 @@ export class CashTransferDto {
   @IsString()
   addresseeBoxId: string;
 
+  @ApiProperty({ example: 100000, required: true })
+  @Min(0.01, { message: 'Debe ser mayor que cero' })
+  @IsNumber()
+  amount: number;
+
   @ApiProperty()
   @IsDate({ message: 'La fecha no tiene un formato adecuado' })
   @IsOptional()
   @Type(() => Date)
   transferDate?: Date;
 
-  @ApiProperty({ example: 100000, required: true })
-  @Min(0.01, { message: 'Debe ser mayor que cero' })
-  @IsNumber()
-  amount: number;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
 }
