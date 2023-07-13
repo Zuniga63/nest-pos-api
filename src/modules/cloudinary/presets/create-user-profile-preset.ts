@@ -1,9 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-export default async function createProfilePhotosPreset(
-  folder = 'profile_photos'
-) {
-  const presetName = 'user_profile_preset2';
+export default async function createProfilePhotosPreset(folder = 'profile_photos') {
+  const presetName = 'user_profile_preset';
   let message = '';
 
   try {

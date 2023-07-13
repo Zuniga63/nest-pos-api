@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -52,8 +43,7 @@ export class RolesController {
     type: RoleDto,
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
   @ApiUnprocessableEntityResponse({
@@ -161,13 +151,7 @@ export class RolesController {
   @Patch(':roleId/update-permissions')
   @ApiOperation({ summary: 'Update the list of permissions' })
   @RequirePermissions(Permission.UPDATE_ROLE_PERMISSIONS)
-  updatePermissions(
-    @Param() params: FindOneParams,
-    @Body() updatePermissionsDto: UpdatePermissionsDto
-  ) {
-    return this.rolesService.updatePermissions(
-      params.roleId,
-      updatePermissionsDto
-    );
+  updatePermissions(@Param() params: FindOneParams, @Body() updatePermissionsDto: UpdatePermissionsDto) {
+    return this.rolesService.updatePermissions(params.roleId, updatePermissionsDto);
   }
 }

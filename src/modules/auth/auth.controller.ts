@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Patch,
-  Post,
-  Request,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBadRequestResponse,
@@ -41,10 +31,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private usersService: UsersService
-  ) {}
+  constructor(private authService: AuthService, private usersService: UsersService) {}
 
   // --------------------------------------------------------------------------
   // SIGN UP
@@ -65,8 +52,7 @@ export class AuthController {
     },
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
   @ApiUnprocessableEntityResponse({
@@ -145,14 +131,8 @@ export class AuthController {
   @ApiNotFoundResponse({
     description: 'User not Found',
   })
-  async updateProfile(
-    @Body() updateUserDto: UpdateUserDto,
-    @Request() req: any
-  ) {
-    const userUpdated = await this.usersService.update(
-      req.user.id,
-      updateUserDto
-    );
+  async updateProfile(@Body() updateUserDto: UpdateUserDto, @Request() req: any) {
+    const userUpdated = await this.usersService.update(req.user.id, updateUserDto);
     return { userUpdated };
   }
 
@@ -176,10 +156,7 @@ export class AuthController {
   })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiBadRequestResponse({ description: 'The image can not uploaded' })
-  async updateProfilePhoto(
-    @UploadedFile() file: Express.Multer.File,
-    @Request() req: any
-  ) {
+  async updateProfilePhoto(@UploadedFile() file: Express.Multer.File, @Request() req: any) {
     const user = req.user;
     return this.authService.updateProfilePhoto(user, file);
   }
@@ -217,10 +194,7 @@ export class AuthController {
     description: 'The new password did not pass validations',
     type: ValidationErrorDto,
   })
-  changePassword(
-    @Request() req: any,
-    @Body() changePasswordDto: ChangePasswordDto
-  ) {
+  changePassword(@Request() req: any, @Body() changePasswordDto: ChangePasswordDto) {
     return this.authService.changeProfilePassword(req.user, changePasswordDto);
   }
   // --------------------------------------------------------------------------

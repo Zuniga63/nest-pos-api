@@ -1,12 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Role, RoleDocument } from 'src/modules/roles/schemas/role.schema';
-import { IImage } from 'src/utils';
+import { IImage } from 'src/types';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CloudinaryPreset } from '../cloudinary/preset.enum';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,10 +14,10 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
     const existSuperAdmin = await this.userModel.exists({ isAdmin: true });
 
     // *The password encrytion ocurrs in the pre.save hook of the model.
@@ -44,10 +40,7 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this.userModel
-      .findById(id)
-      .select('-password')
-      .populate('role', '-users');
+    const user = await this.userModel.findById(id).select('-password').populate('role', '-users');
 
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
@@ -96,16 +89,8 @@ export class UsersService {
     }
 
     const [role, user] = await Promise.all([
-      this.roleModel
-        .findByIdAndUpdate(
-          roleId,
-          { $addToSet: { users: userId } },
-          { new: true }
-        )
-        .select('name'),
-      this.userModel
-        .findByIdAndUpdate(userId, { role: roleId }, { new: true })
-        .populate('role', 'name'),
+      this.roleModel.findByIdAndUpdate(roleId, { $addToSet: { users: userId } }, { new: true }).select('name'),
+      this.userModel.findByIdAndUpdate(userId, { role: roleId }, { new: true }).populate('role', 'name'),
     ]);
 
     return { role, user };
@@ -113,14 +98,8 @@ export class UsersService {
 
   async removeRole(userId: string, roleId: string) {
     const [role, user] = await Promise.all([
-      this.roleModel
-        .findByIdAndUpdate(roleId, { $pull: { users: userId } }, { new: true })
-        .select('name'),
-      this.userModel.findByIdAndUpdate(
-        userId,
-        { role: undefined },
-        { new: true }
-      ),
+      this.roleModel.findByIdAndUpdate(roleId, { $pull: { users: userId } }, { new: true }).select('name'),
+      this.userModel.findByIdAndUpdate(userId, { role: undefined }, { new: true }),
     ]);
 
     return { role, user };
@@ -135,11 +114,7 @@ export class UsersService {
 
     try {
       // Save the file in the cloudinary
-      const cloundResponse = await this.cloudinaryService.uploadImage(
-        file,
-        user.name,
-        CloudinaryPreset.PROFILE_PHOTO
-      );
+      const cloundResponse = await this.cloudinaryService.uploadImage(file, user.name, CloudinaryPreset.PROFILE_PHOTO);
 
       // Get the metadata with response
       profilePhoto = this.cloudinaryService.getImageInfo(cloundResponse);

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/modules/users/users.service';
 import { compareSync } from 'bcrypt';
 import { User } from 'src/modules/users/schema/user.schema';
@@ -13,16 +9,9 @@ import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private mailService: MailService
-  ) {}
+  constructor(private usersService: UsersService, private jwtService: JwtService, private mailService: MailService) {}
 
-  async validateUser(
-    username: string,
-    pass: string
-  ): Promise<Omit<User, 'password'> | null> {
+  async validateUser(username: string, pass: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersService.findOneByEmail(username);
 
     if (user && user.isActive && compareSync(pass, user.password)) {
@@ -54,14 +43,8 @@ export class AuthService {
     return this.login(user);
   }
 
-  async updateProfilePhoto(
-    user: Omit<User, 'password'>,
-    file: Express.Multer.File
-  ) {
-    const userUpdated = await this.usersService.updateProfilePhoto(
-      user.id,
-      file
-    );
+  async updateProfilePhoto(user: Omit<User, 'password'>, file: Express.Multer.File) {
+    const userUpdated = await this.usersService.updateProfilePhoto(user.id, file);
     return { user: userUpdated };
   }
 
@@ -71,10 +54,7 @@ export class AuthService {
     return { user: userUpdated };
   }
 
-  async changeProfilePassword(
-    authUser: Omit<User, 'password'>,
-    changePasswordDto: ChangePasswordDto
-  ) {
+  async changeProfilePassword(authUser: Omit<User, 'password'>, changePasswordDto: ChangePasswordDto) {
     const user = await this.usersService.findOneByEmail(authUser.email);
     if (!user) throw new NotFoundException('Usuario no encontrado');
 

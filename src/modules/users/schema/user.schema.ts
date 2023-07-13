@@ -2,7 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, HydratedDocument } from 'mongoose';
 import { Role } from 'src/modules/roles/schemas/role.schema';
 import { Cashbox } from 'src/modules/cashboxes/schemas/cashbox.schema';
-import { emailRegex, IImage } from 'src/utils';
+import { emailRegex } from 'src/utils';
+import { IImage } from 'src/types';
 
 export type UserDocument = HydratedDocument<User>;
 

@@ -35,5 +35,4 @@ export class CashboxTransaction {
   balance?: number;
 }
 
-export const CashboxTransactionSchema =
-  SchemaFactory.createForClass(CashboxTransaction);
+export const CashboxTransactionSchema = SchemaFactory.createForClass(CashboxTransaction);

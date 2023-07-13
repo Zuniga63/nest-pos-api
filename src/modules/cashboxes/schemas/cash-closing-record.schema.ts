@@ -79,5 +79,4 @@ export class CashClosingRecord {
   transactions: CashboxTransaction[];
 }
 
-export const CashClosingRecordSchema =
-  SchemaFactory.createForClass(CashClosingRecord);
+export const CashClosingRecordSchema = SchemaFactory.createForClass(CashClosingRecord);

@@ -1,14 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsMongoId,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsDate, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { NotMatch } from 'src/utils/decorators/no-match.decorator';
 
 export class CashTransferDto {

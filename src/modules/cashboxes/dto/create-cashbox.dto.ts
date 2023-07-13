@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateCashboxDto {
   @ApiProperty({ required: true, example: 'Main Box' })
@@ -18,8 +12,7 @@ export class CreateCashboxDto {
   @ApiProperty({
     required: false,
     type: [String],
-    description:
-      'User IDs that can access to the box, the current user add by default',
+    description: 'User IDs that can access to the box, the current user add by default',
   })
   @IsString({ each: true })
   @IsOptional()

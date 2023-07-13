@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import { FilterQuery, isValidObjectId, Model, Types } from 'mongoose';
@@ -14,18 +10,9 @@ import { CreateCashboxDto } from './dto/create-cashbox.dto';
 import { CreateTransactionDto } from './dto/create-transation.dto';
 import { OpenBoxDto } from './dto/open-box.dto';
 import { UpdateCashboxDto } from './dto/update-cashbox.dto';
-import {
-  CashClosingRecord,
-  CashClosingRecordDocument,
-} from './schemas/cash-closing-record.schema';
-import {
-  CashTransfer,
-  CashTransferDocument,
-} from './schemas/cash-transfer.schema';
-import {
-  CashboxTransaction,
-  CashboxTransactionDocument,
-} from './schemas/cashbox-transaction.schema';
+import { CashClosingRecord, CashClosingRecordDocument } from './schemas/cash-closing-record.schema';
+import { CashTransfer, CashTransferDocument } from './schemas/cash-transfer.schema';
+import { CashboxTransaction, CashboxTransactionDocument } from './schemas/cashbox-transaction.schema';
 import { Cashbox, CashboxDocument } from './schemas/cashbox.schema';
 
 @Injectable()
@@ -38,7 +25,7 @@ export class CashboxesService {
     private closingModel: Model<CashClosingRecordDocument>,
     @InjectModel(CashTransfer.name)
     private cashTransferModel: Model<CashTransferDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   // --------------------------------------------------------------------------
@@ -51,13 +38,7 @@ export class CashboxesService {
    */
   protected getUniqueIds(userIds?: string[], currentUserId?: string): string[] {
     const ids = userIds
-      ? [
-          ...new Set(
-            userIds
-              .filter((id) => isValidObjectId(id))
-              .map((id) => id.toLocaleLowerCase())
-          ),
-        ]
+      ? [...new Set(userIds.filter((id) => isValidObjectId(id)).map((id) => id.toLocaleLowerCase()))]
       : [];
 
     if (currentUserId && !ids.includes(currentUserId)) {
@@ -77,9 +58,7 @@ export class CashboxesService {
     // Validate IDs and remove duplicate
     const ids = this.getUniqueIds(userIds, user?.id);
 
-    const users = await this.userModel
-      .find({ _id: { $in: ids } })
-      .select('boxes');
+    const users = await this.userModel.find({ _id: { $in: ids } }).select('boxes');
 
     return users.filter((item) => Boolean(item)) as UserDocument[];
   }
@@ -122,7 +101,7 @@ export class CashboxesService {
       users.map((user) => {
         user?.boxes.push(cashbox);
         return user?.save({ validateBeforeSave: false });
-      })
+      }),
     );
 
     return cashbox;
@@ -132,10 +111,7 @@ export class CashboxesService {
     // Get the cashboxes that the user can see
     const filter = this.buildCashboxFilter(user);
 
-    const boxes = await this.cashboxModel
-      .find(filter)
-      .sort('name')
-      .populate('cashier', 'name');
+    const boxes = await this.cashboxModel.find(filter).sort('name').populate('cashier', 'name');
 
     // For each casbox, the sum of the transactions is recovered
     const sums = await this.transactionModel
@@ -174,8 +150,7 @@ export class CashboxesService {
       })
       .populate({
         path: 'closingRecords',
-        select:
-          'cashierName opened closingDate base incomes cash leftover missing observation',
+        select: 'cashierName opened closingDate base incomes cash leftover missing observation',
         options: { sort: { closingDate: -1 }, limit: 10 },
       });
 
@@ -243,10 +218,7 @@ export class CashboxesService {
 
     await Promise.all(updates);
 
-    const boxBalance = boxDocument.transactions.reduce(
-      (balance, { amount }) => balance + amount,
-      boxDocument.base
-    );
+    const boxBalance = boxDocument.transactions.reduce((balance, { amount }) => balance + amount, boxDocument.base);
 
     boxDocument.depopulate('transactions').depopulate('users');
 
@@ -280,13 +252,10 @@ export class CashboxesService {
       promises.push(boxUser.save({ validateBeforeSave: false }));
     });
 
-    await this.closingModel.updateMany(
-      { cashbox: cashbox.id },
-      { $set: { cashbox: undefined } }
-    );
+    await this.closingModel.updateMany({ cashbox: cashbox.id }, { $set: { cashbox: undefined } });
 
     // delete the box
-    promises.push(cashbox.remove());
+    promises.push(cashbox.deleteOne());
 
     await Promise.all(promises);
 
@@ -301,9 +270,7 @@ export class CashboxesService {
 
     // Get the cashbox
     const filter = this.buildCashboxFilter(user, id);
-    const cashbox = await this.cashboxModel
-      .findOne(filter)
-      .where('openBox', null);
+    const cashbox = await this.cashboxModel.findOne(filter).where('openBox', null);
 
     if (!cashbox) {
       throw new NotFoundException();
@@ -332,11 +299,7 @@ export class CashboxesService {
     const closeDate = dayjs().toDate();
 
     // Get the cashbox
-    const cashbox = await this.cashboxModel
-      .findOne(filter)
-      .populate('cashier', 'name')
-      .where('openBox')
-      .ne(null);
+    const cashbox = await this.cashboxModel.findOne(filter).populate('cashier', 'name').where('openBox').ne(null);
 
     if (!cashbox) throw new NotFoundException();
 
@@ -362,9 +325,9 @@ export class CashboxesService {
 
     if (balance > cash) {
       missing = balance - cash;
-      const missingDescription = `Faltante de la caja ${
-        cashbox.name
-      } a cargo del cajero ${cashbox.cashier?.name || cashbox.cashierName}`;
+      const missingDescription = `Faltante de la caja ${cashbox.name} a cargo del cajero ${
+        cashbox.cashier?.name || cashbox.cashierName
+      }`;
 
       const missingTransaction = new this.transactionModel({
         transactionDate: closeDate,
@@ -375,9 +338,9 @@ export class CashboxesService {
       transactions.push(missingTransaction);
     } else if (balance < cash) {
       leftover = cash - balance;
-      const leftoverDescription = `Sobrante de la caja ${
-        cashbox.name
-      } a cargo del cajero ${cashbox.cashier?.name || cashbox.cashierName}`;
+      const leftoverDescription = `Sobrante de la caja ${cashbox.name} a cargo del cajero ${
+        cashbox.cashier?.name || cashbox.cashierName
+      }`;
 
       const letfoverTransaction = new this.transactionModel({
         transactionDate: closeDate,
@@ -415,9 +378,7 @@ export class CashboxesService {
     cashbox.closingRecords.push(closing);
 
     promises.push(cashbox.save({ validateBeforeSave: false }));
-    promises.push(
-      ...transactions.map((t) => t.save({ validateBeforeSave: false }))
-    );
+    promises.push(...transactions.map((t) => t.save({ validateBeforeSave: false })));
     promises.push(closing.save());
 
     await Promise.all(promises);
@@ -425,25 +386,16 @@ export class CashboxesService {
     return cashbox.depopulate('transactions');
   }
 
-  async addTransaction(
-    id: string,
-    createTransactionDto: CreateTransactionDto,
-    user: User
-  ) {
+  async addTransaction(id: string, createTransactionDto: CreateTransactionDto, user: User) {
     // Get the cashbox
     const filter = this.buildCashboxFilter(user, id);
-    const cashbox = await this.cashboxModel
-      .findOne(filter)
-      .where('openBox')
-      .ne(null);
+    const cashbox = await this.cashboxModel.findOne(filter).where('openBox').ne(null);
     if (!cashbox) throw new NotFoundException();
 
     // Create transaction
     const date = dayjs(createTransactionDto.transactionDate);
     const openBox = dayjs(cashbox.openBox);
-    const transactionDate = date.isBefore(openBox)
-      ? openBox.add(1, 'millisecond')
-      : date;
+    const transactionDate = date.isBefore(openBox) ? openBox.add(1, 'millisecond') : date;
 
     const transaction = await this.transactionModel.create({
       ...createTransactionDto,
@@ -463,25 +415,16 @@ export class CashboxesService {
     const filter = this.buildCashboxFilter(user, boxId);
 
     const [cashbox, transaction] = await Promise.all([
-      this.cashboxModel
-        .findOne(filter)
-        .where('openBox')
-        .populate('transactions', 'id')
-        .ne(null),
+      this.cashboxModel.findOne(filter).where('openBox').populate('transactions', 'id').ne(null),
       this.transactionModel.findById(transactionId),
     ]);
     if (!transaction || !cashbox) throw new NotFoundException();
 
     // Remove the transaction from cashbox
-    cashbox.transactions = cashbox.transactions.filter(
-      (boxTransaction) => boxTransaction.id !== transaction.id
-    );
+    cashbox.transactions = cashbox.transactions.filter((boxTransaction) => boxTransaction.id !== transaction.id);
 
     // Delete transaction and update the cashbox
-    await Promise.all([
-      transaction.remove(),
-      cashbox.save({ validateBeforeSave: false }),
-    ]);
+    await Promise.all([transaction.deleteOne(), cashbox.save({ validateBeforeSave: false })]);
 
     return transaction;
   }
@@ -494,10 +437,7 @@ export class CashboxesService {
    * @param senderBoxId ID of cashbox sending the found
    * @param addresseeBoxId ID of the cashbox receiving the found
    */
-  protected validateCashTransferIds(
-    senderBoxId: string,
-    addresseeBoxId: string
-  ) {
+  protected validateCashTransferIds(senderBoxId: string, addresseeBoxId: string) {
     const validationErrors: IValidationError = {};
     let hasError = false;
 
@@ -536,7 +476,7 @@ export class CashboxesService {
     addresseeId: string,
     transferDate: Date,
     transferAmount: number,
-    user: User
+    user: User,
   ): Promise<[CashboxDocument, CashboxDocument]> {
     const validationErrors: IValidationError = {};
     let senderError: string | undefined;
@@ -546,9 +486,7 @@ export class CashboxesService {
     const addresseeFilter = this.buildCashboxFilter(user, addresseeId);
 
     const [senderBox, addresseeBox] = await Promise.all([
-      this.cashboxModel
-        .findOne(senderFilter)
-        .populate('transactions', 'amount'),
+      this.cashboxModel.findOne(senderFilter).populate('transactions', 'amount'),
       this.cashboxModel.findOne(addresseeFilter),
     ]);
 
@@ -561,10 +499,7 @@ export class CashboxesService {
       senderError = 'La fecha de la transferencia ';
       senderError += 'es anterior a la apertura de la caja';
     } else {
-      const amountSum = senderBox.transactions.reduce(
-        (current, { amount }) => current + amount,
-        0
-      );
+      const amountSum = senderBox.transactions.reduce((current, { amount }) => current + amount, 0);
       const balance = senderBox.base + amountSum;
 
       if (balance < transferAmount) {
@@ -605,8 +540,7 @@ export class CashboxesService {
   }
 
   async cashTransfer(cashTransferDto: CashTransferDto, user: User) {
-    const { senderBoxId, addresseeBoxId, amount, description } =
-      cashTransferDto;
+    const { senderBoxId, addresseeBoxId, amount, description } = cashTransferDto;
     const transferDate = cashTransferDto.transferDate || dayjs().toDate();
 
     const [senderBox, addresseeBox] = await this.validateCashTransfer(
@@ -614,7 +548,7 @@ export class CashboxesService {
       addresseeBoxId,
       transferDate,
       amount,
-      user
+      user,
     );
     let senderDescription = `Transferencia de fondos a la caja ${addresseeBox.name}`;
     let addresseeDescription = `Deposito de fondos desde la caja ${senderBox.name}`;
@@ -671,7 +605,7 @@ export class CashboxesService {
   // TRANSACTIONS
   // --------------------------------------------------------------------------
 
-  async findAllTransactions() {
+  async findAllTransactions(): Promise<CashboxTransaction[]> {
     const transactionDocuments = await this.transactionModel
       .find({
         isTransfer: null,
@@ -680,10 +614,12 @@ export class CashboxesService {
       .populate('cashbox', 'name');
 
     let balance = 0;
-    return transactionDocuments.map((document) => {
+    const transactions = transactionDocuments.map((document) => {
       balance += document.amount;
       return { ...document.toObject(), balance };
     });
+
+    return transactions;
   }
 
   async getGlobalBalance() {
@@ -700,9 +636,7 @@ export class CashboxesService {
   }
 
   async deleteMainTransaction(transactionId: string) {
-    const transaction = await this.transactionModel.findByIdAndDelete(
-      transactionId
-    );
+    const transaction = await this.transactionModel.findByIdAndDelete(transactionId);
     if (!transaction) throw new NotFoundException();
 
     return transaction;

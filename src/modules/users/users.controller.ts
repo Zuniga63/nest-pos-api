@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -67,8 +58,7 @@ export class UsersController {
     },
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
   @ApiUnprocessableEntityResponse({
@@ -155,10 +145,7 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: 'User not Found',
   })
-  async update(
-    @Param() { userId }: FindOneParams,
-    @Body() updateUserDto: UpdateUserDto
-  ) {
+  async update(@Param() { userId }: FindOneParams, @Body() updateUserDto: UpdateUserDto) {
     const userUpdated = await this.usersService.update(userId, updateUserDto);
     return { userUpdated };
   }
@@ -170,8 +157,7 @@ export class UsersController {
   @RequirePermissions(Permission.DELETE_USER)
   @ApiOperation({
     summary: 'Delete user',
-    description:
-      'This end point remove the user data and update the role users.',
+    description: 'This end point remove the user data and update the role users.',
   })
   @ApiOkResponse({
     description: 'The deleted user',

@@ -9,10 +9,10 @@ export class PermissionsGuards implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(contex: ExecutionContext): boolean {
-    const requiredPermissions = this.reflector.getAllAndOverride<Permission[]>(
-      PERMISSIONS_KEY,
-      [contex.getHandler(), contex.getClass()]
-    );
+    const requiredPermissions = this.reflector.getAllAndOverride<Permission[]>(PERMISSIONS_KEY, [
+      contex.getHandler(),
+      contex.getClass(),
+    ]);
 
     if (!requiredPermissions) return true;
 
@@ -21,9 +21,7 @@ export class PermissionsGuards implements CanActivate {
     if (user && (user as User).isAdmin) return true;
 
     if (user.role && user.role.permissions?.length > 0) {
-      return requiredPermissions.every((permission) =>
-        user.role.permissions?.includes(permission)
-      );
+      return requiredPermissions.every((permission) => user.role.permissions?.includes(permission));
     }
 
     return false;

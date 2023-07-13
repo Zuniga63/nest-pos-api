@@ -10,16 +10,16 @@ import { MailService } from './mail.service';
     MailerModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         transport: {
-          host: config.get<string>('MAIL_HOST'),
-          port: config.get<number>('MAIL_PORT'),
+          host: config.get<string>('mail.host'),
+          port: config.get<number>('mail.port'),
           secure: true,
           auth: {
-            user: config.get<string>('MAIL_USER'),
-            pass: config.get<string>('MAIL_PASSWORD'),
+            user: config.get<string>('mail.user'),
+            pass: config.get<string>('mail.pass'),
           },
         },
         defaults: {
-          from: `"No Reply" <${config.get<string>('MAIL_FROM')}>`,
+          from: `"No Reply" <${config.get<string>('mail.from')}>`,
         },
         template: {
           dir: join(__dirname, 'templates'),

@@ -13,8 +13,7 @@ export default [
   {
     id: 1,
     name: 'Roles',
-    description:
-      'Permisos para la adminsitración de los roles de la paltaforma',
+    description: 'Permisos para la adminsitración de los roles de la paltaforma',
     permissions: [
       // CREATE
       {

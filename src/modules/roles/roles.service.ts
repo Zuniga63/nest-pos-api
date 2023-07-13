@@ -47,10 +47,7 @@ export class RolesService {
 
       if (role.order < count) {
         // All roles with higher order are reduced by one degree
-        await this.roleModel.updateMany(
-          { order: { $gt: role.order } },
-          { $inc: { order: -1 } }
-        );
+        await this.roleModel.updateMany({ order: { $gt: role.order } }, { $inc: { order: -1 } });
       }
 
       // Update the order of current role
@@ -74,20 +71,13 @@ export class RolesService {
     if (!roleDeleted) throw new NotFoundException('Rol no encontrado');
 
     // Update the order of rest roles
-    await this.roleModel.updateMany(
-      { order: { $gt: roleDeleted.order } },
-      { $inc: { order: -1 } }
-    );
+    await this.roleModel.updateMany({ order: { $gt: roleDeleted.order } }, { $inc: { order: -1 } });
 
     return { ok: true, role: roleDeleted };
   }
 
   async updatePermissions(id: string, { permissions }: UpdatePermissionsDto) {
-    const role = await this.roleModel.findByIdAndUpdate(
-      id,
-      { permissions: permissions },
-      { new: true }
-    );
+    const role = await this.roleModel.findByIdAndUpdate(id, { permissions: permissions }, { new: true });
     if (!role) throw new NotFoundException('Rol no encontrado');
 
     return { role, permissions };

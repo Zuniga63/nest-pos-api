@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UploadApiOptions, UploadApiResponse, v2 } from 'cloudinary';
 import toStream = require('buffer-to-stream');
-import { createSlug, IImage } from 'src/utils';
+import { createSlug } from 'src/utils';
+import { IImage } from 'src/types';
 import { nanoid } from 'nanoid';
 import createProfilePhotosPreset from './presets/create-user-profile-preset';
 
@@ -10,10 +11,10 @@ export class CloudinaryService {
   async uploadImage(
     file: Express.Multer.File,
     fileName?: string,
-    preset = 'ml_default'
+    preset = 'ml_default',
   ): Promise<UploadApiResponse | undefined> {
     const { mimetype } = file;
-    const [fileType] = mimetype.split('/');
+    const [fileType] = mimetype.split('/') as ['image' | 'video' | 'raw' | 'auto' | undefined];
     const options: UploadApiOptions = {
       upload_preset: preset,
       resource_type: fileType,
@@ -40,14 +41,7 @@ export class CloudinaryService {
     let image: IImage | undefined;
 
     if (uploadResponse) {
-      const {
-        public_id: publicId,
-        width,
-        height,
-        format,
-        resource_type: type,
-        secure_url: url,
-      } = uploadResponse;
+      const { public_id: publicId, width, height, format, resource_type: type, secure_url: url } = uploadResponse;
       image = { publicId, width, height, format, type, url };
     }
 

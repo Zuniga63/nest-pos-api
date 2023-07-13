@@ -16,14 +16,4 @@ export const createSlug = (text: string): string => {
 
 export const emailRegex = /^[^@]+@[^@]+.[^@]+$/;
 
-export const strongPass =
-  /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/;
-
-export interface IImage {
-  publicId: string;
-  width: number;
-  height: number;
-  format: string;
-  type: string;
-  url: string;
-}
+export const strongPass = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/;

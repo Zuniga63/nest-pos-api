@@ -64,8 +64,7 @@ export class CashboxesController {
     type: NewCashboxDto,
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
   @ApiUnprocessableEntityResponse({
@@ -100,8 +99,7 @@ export class CashboxesController {
   @ApiOperation({ summary: 'Get cashbox by Id' })
   @ApiOkResponse({ type: CashboxWithAll })
   @ApiNotFoundResponse({
-    description:
-      'The searched box was not found or you do not have access to it',
+    description: 'The searched box was not found or you do not have access to it',
   })
   findOne(@Param('id') id: string, @Req() req: Request) {
     if (!req.user) throw new UnauthorizedException();
@@ -116,23 +114,17 @@ export class CashboxesController {
   @ApiOperation({ summary: 'Update cashbox by Id' })
   @ApiOkResponse({ description: 'Ok', type: CashboxDto })
   @ApiNotFoundResponse({
-    description:
-      'The cashbox was not found or you do not have access to update',
+    description: 'The cashbox was not found or you do not have access to update',
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
   @ApiUnprocessableEntityResponse({
     description: 'Has not passed the validation for saving in the database',
     type: ValidationErrorDto,
   })
-  update(
-    @Param('id') id: string,
-    @Body() updateCashboxDto: UpdateCashboxDto,
-    @Req() req: Request
-  ) {
+  update(@Param('id') id: string, @Body() updateCashboxDto: UpdateCashboxDto, @Req() req: Request) {
     if (!req.user) throw new UnauthorizedException();
     return this.cashboxesService.update(id, updateCashboxDto, req.user as User);
   }
@@ -145,8 +137,7 @@ export class CashboxesController {
   @ApiOkResponse({ description: 'Ok', type: CashboxDto })
   @ApiOperation({ summary: 'Delete cashbox by Id' })
   @ApiNotFoundResponse({
-    description:
-      'The cashbox was not found or you do not have access to deleted',
+    description: 'The cashbox was not found or you do not have access to deleted',
   })
   @ApiBadRequestResponse({ description: 'The box is open' })
   remove(@Param('id') id: string, @Req() req: Request) {
@@ -161,23 +152,17 @@ export class CashboxesController {
   @RequirePermissions(Permission.OPEN_CASHBOX)
   @ApiOperation({
     summary: 'Open cashbox with a base',
-    description:
-      'By default the base is set to zero and the date at this time or after last close',
+    description: 'By default the base is set to zero and the date at this time or after last close',
   })
   @ApiOkResponse({ description: 'The box is open', type: CashboxDto })
   @ApiNotFoundResponse({
     description: 'The cashbox not found or already in operation',
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
-  openCashbox(
-    @Param('id') id: string,
-    @Body() openBoxDto: OpenBoxDto,
-    @Req() req: Request
-  ) {
+  openCashbox(@Param('id') id: string, @Body() openBoxDto: OpenBoxDto, @Req() req: Request) {
     if (!req.user) throw new UnauthorizedException();
     return this.cashboxesService.openCashbox(id, openBoxDto, req.user as User);
   }
@@ -195,21 +180,12 @@ export class CashboxesController {
     description: 'The cashbox not found or out of service',
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
-  closeCashbox(
-    @Param('id') id: string,
-    @Body() closeBoxDto: CloseBoxDto,
-    @Req() req: Request
-  ) {
+  closeCashbox(@Param('id') id: string, @Body() closeBoxDto: CloseBoxDto, @Req() req: Request) {
     if (!req.user) throw new UnauthorizedException();
-    return this.cashboxesService.closeCashbox(
-      id,
-      closeBoxDto,
-      req.user as User
-    );
+    return this.cashboxesService.closeCashbox(id, closeBoxDto, req.user as User);
   }
   // ------------------------------------------------------------------------------------
   // TRANSACTIONS
@@ -227,21 +203,12 @@ export class CashboxesController {
     type: TransactionDto,
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
-  addTransaction(
-    @Param('id') id: string,
-    @Body() createTransactionDto: CreateTransactionDto,
-    @Req() req: Request
-  ) {
+  addTransaction(@Param('id') id: string, @Body() createTransactionDto: CreateTransactionDto, @Req() req: Request) {
     if (!req.user) throw new UnauthorizedException();
-    return this.cashboxesService.addTransaction(
-      id,
-      createTransactionDto,
-      req.user as User
-    );
+    return this.cashboxesService.addTransaction(id, createTransactionDto, req.user as User);
   }
   // ------------------------------------------------------------------------------------
   // DELETE TRANSACTIONS
@@ -256,20 +223,11 @@ export class CashboxesController {
     type: TransactionDto,
   })
   @ApiNotFoundResponse({
-    description:
-      'The cashbox or transaction not found or dont has permission for deleted',
+    description: 'The cashbox or transaction not found or dont has permission for deleted',
   })
-  deleteTransaction(
-    @Param('boxId') boxId: string,
-    @Param('transactionId') transactionId: string,
-    @Req() req: Request
-  ) {
+  deleteTransaction(@Param('boxId') boxId: string, @Param('transactionId') transactionId: string, @Req() req: Request) {
     if (!req.user) throw new UnauthorizedException();
-    return this.cashboxesService.deleteTransaction(
-      boxId,
-      transactionId,
-      req.user as User
-    );
+    return this.cashboxesService.deleteTransaction(boxId, transactionId, req.user as User);
   } //./deleteTransaction
 
   // ------------------------------------------------------------------------------------
@@ -280,17 +238,13 @@ export class CashboxesController {
   @ApiOperation({ summary: 'Cash transfer to other box' })
   @ApiOkResponse({ description: 'The cash transfer was successfully' })
   @ApiNotFoundResponse({
-    description:
-      'The sender box or the addressee box not found or not have access to them',
+    description: 'The sender box or the addressee box not found or not have access to them',
   })
   @ApiBadRequestResponse({
     description: 'Incorrect dates or insufficient founds',
     type: ValidationErrorDto,
   })
-  cashTransfer(
-    @Body() cashTransferDto: CashTransferDto,
-    @Req() { user }: Request
-  ) {
+  cashTransfer(@Body() cashTransferDto: CashTransferDto, @Req() { user }: Request) {
     return this.cashboxesService.cashTransfer(cashTransferDto, user as User);
   }
 
@@ -303,13 +257,11 @@ export class CashboxesController {
     summary: 'Add transaction to main box',
   })
   @ApiCreatedResponse({
-    description:
-      'The transaction was success create, this transaction response a cashbox object',
+    description: 'The transaction was success create, this transaction response a cashbox object',
     type: TransactionDto,
   })
   @ApiBadRequestResponse({
-    description:
-      'Some of the submitted field have not passed primary validation',
+    description: 'Some of the submitted field have not passed primary validation',
     type: ValidationErrorDto,
   })
   storeMainTransaction(@Body() createTransactionDto: CreateTransactionDto) {
@@ -323,8 +275,7 @@ export class CashboxesController {
     description: 'List of transaction without transfers',
   })
   @ApiOkResponse({
-    description:
-      'List of transaction, the transaction populate de name of cashbox',
+    description: 'List of transaction, the transaction populate de name of cashbox',
     type: [TransactionDto],
   })
   findAllTransaction() {
