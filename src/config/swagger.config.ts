@@ -8,5 +8,6 @@ export default new DocumentBuilder()
   .addTag('Users', 'Route for user administration')
   .addTag('Roles', 'Routes for role administration')
   .addTag('Cashboxes', 'Routes for boxes administration')
+  .addTag('Brands', 'End points for products brand admin')
   .addBearerAuth()
   .build();
