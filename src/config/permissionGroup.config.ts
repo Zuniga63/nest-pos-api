@@ -1,9 +1,10 @@
 import { Permission } from 'src/modules/auth/permission.enum';
 
 export enum PermissionGroupKeys {
-  roles,
-  users,
-  cashboxes,
+  ROLES,
+  USERS,
+  CASHBOXES,
+  PRODUCT_BRANDS,
 }
 
 export default [
@@ -11,7 +12,7 @@ export default [
   // ROLES PERMISSIONS
   // --------------------------------------------------------------------------
   {
-    id: 1,
+    id: PermissionGroupKeys.ROLES,
     name: 'Roles',
     description: 'Permisos para la adminsitración de los roles de la paltaforma',
     permissions: [
@@ -63,7 +64,7 @@ export default [
   // USER PERMISSIONS
   // --------------------------------------------------------------------------
   {
-    id: 1,
+    id: PermissionGroupKeys.USERS,
     name: 'Usuario',
     description: 'Permisos para la adminsitración de los usuarios',
     permissions: [
@@ -102,7 +103,7 @@ export default [
   // CASHBOX PERMISSIONS
   // --------------------------------------------------------------------------
   {
-    id: PermissionGroupKeys.cashboxes,
+    id: PermissionGroupKeys.CASHBOXES,
     name: 'Cajas',
     description: 'Permisos para la adminsitración de las cajas',
     permissions: [
@@ -155,6 +156,39 @@ export default [
         id: 9,
         name: 'Transferencia de fondos',
         key: Permission.CASH_TRANSFER,
+      },
+    ],
+  },
+  // --------------------------------------------------------------------------
+  // PRODUCT BRAND PERMISSIONS
+  // --------------------------------------------------------------------------
+  {
+    id: PermissionGroupKeys.PRODUCT_BRANDS,
+    name: 'Marcas de productos',
+    description: 'Permisos para la adminsitración de las marcas de productos',
+    permissions: [
+      // CREATE
+      {
+        id: 1,
+        name: 'Crear',
+        key: Permission.CREATE_NEW_PRODUCT_BRAND,
+      },
+      {
+        id: 2,
+        name: 'Ver Marcas',
+        key: Permission.READ_PRODUCT_BRAND,
+      },
+      // UPDATE
+      {
+        id: 3,
+        name: 'Editar Marca',
+        key: Permission.UPDATE_PRODUCT_BRAND,
+      },
+      // DELETE
+      {
+        id: 4,
+        name: 'Eliminar',
+        key: Permission.DELETE_PRODUCT_BRAND,
       },
     ],
   },

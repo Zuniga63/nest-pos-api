@@ -18,6 +18,10 @@ export class ProductBrand {
 
   @Prop({ type: Object })
   image?: IImage;
+
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
 export const ProductBrandSchema = SchemaFactory.createForClass(ProductBrand);

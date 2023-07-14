@@ -27,6 +27,13 @@ export enum Permission {
   DELETE_TRANSACTION = 'DELETE_TRANSACTION',
   CASH_TRANSFER = 'CASH_TRANSFER',
   // ---------------------------------------------------------------
+  // PRODUCT BRAND PERMISISION
+  // ---------------------------------------------------------------
+  CREATE_NEW_PRODUCT_BRAND = 'CREATE_NEW_PRODUCT_BRAND',
+  UPDATE_PRODUCT_BRAND = 'UPDATE_PRODUCT_BRAND',
+  READ_PRODUCT_BRAND = 'READ_PRODUCT_BRAND',
+  DELETE_PRODUCT_BRAND = 'DELETE_PRODUCT_BRAND',
+  // ---------------------------------------------------------------
   // SUPER ADMIN PERMISSIONS
   // ---------------------------------------------------------------
   INSTALL_CLOUD_PRESETS = 'INSTALL_CLOUD_PRESETS',

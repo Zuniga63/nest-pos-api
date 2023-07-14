@@ -54,14 +54,43 @@ export class CloudinaryService {
     return result;
   }
 
+  /**
+   * Update the file name of cloudinary
+   * @param lastId
+   * @param fileName
+   * @param isPublicId for define if the file name is a public id
+   * @returns
+   */
+  async renameFile(lastId: string, fileName: string, isPublicId = false) {
+    try {
+      let newPublicId = fileName;
+
+      if (!isPublicId) {
+        // Get the current folder of file
+        const lastIdParts = lastId.split('/'); // Get parts of id
+        lastIdParts.pop(); // Remove the file name
+        const folderUrl = lastIdParts.join('/');
+
+        // Create the new pucblic Id
+        const newFileName = encodeURIComponent(createSlug(fileName)) + '-' + nanoid(10);
+        newPublicId = folderUrl ? `${folderUrl}/${newFileName}` : newFileName;
+      }
+
+      const res = await v2.uploader.rename(lastId, newPublicId, { invalidate: true, overwrite: true });
+      return this.getImageInfo(res);
+    } catch (error) {
+      return undefined;
+    }
+  }
+
   async destroyFile(publicId: string) {
     let isDelted = false;
     try {
       const cloudRes = await v2.uploader.destroy(publicId);
-      console.log(cloudRes);
+      console.log('Cloudinary destroy success:', cloudRes);
       isDelted = true;
     } catch (error) {
-      console.log(error);
+      console.log('Cloudinary destroy error: ', error);
     }
 
     return isDelted;
