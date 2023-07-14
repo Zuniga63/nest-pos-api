@@ -5,6 +5,7 @@ import { createSlug } from 'src/utils';
 import { IImage } from 'src/types';
 import { nanoid } from 'nanoid';
 import createProfilePhotosPreset from './presets/create-user-profile-preset';
+import createProductBrandPreset from './presets/create-product-brand-preset';
 
 @Injectable()
 export class CloudinaryService {
@@ -49,7 +50,8 @@ export class CloudinaryService {
   }
 
   createPresets() {
-    return createProfilePhotosPreset();
+    const result = Promise.all([createProfilePhotosPreset(), createProductBrandPreset()]);
+    return result;
   }
 
   async destroyFile(publicId: string) {

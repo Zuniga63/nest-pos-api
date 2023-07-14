@@ -1,8 +1,8 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryPreset } from '../preset.enum';
 
-export default async function createProfilePhotosPreset(folder = 'profile_photos') {
-  const presetName = CloudinaryPreset.PROFILE_PHOTO;
+export default async function createProductBrandPreset(folder = 'brands') {
+  const presetName = CloudinaryPreset.PRODUCT_BRAND;
   let message = '';
 
   try {
