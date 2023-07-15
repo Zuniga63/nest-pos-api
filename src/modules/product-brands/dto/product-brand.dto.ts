@@ -9,6 +9,9 @@ export class ProductBrandDto {
   @ApiProperty({ example: 'The amazing brand name' })
   name: string;
 
+  @ApiProperty({ example: 'the-amazing-brand-name' })
+  slug: string;
+
   @ApiProperty({ type: ImageDto, readOnly: true })
   image?: IImage;
 

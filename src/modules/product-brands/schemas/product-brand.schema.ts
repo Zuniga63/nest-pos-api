@@ -16,6 +16,9 @@ export class ProductBrand {
   })
   name: string;
 
+  @Prop({ unique: true, required: true })
+  slug: string;
+
   @Prop({ type: Object })
   image?: IImage;
 

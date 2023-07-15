@@ -8,6 +8,7 @@ import { ProductBrandDto } from './dto/product-brand.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CloudinaryPreset } from '../cloudinary/preset.enum';
 import { IImage } from 'src/types';
+import { createSlug } from 'src/utils';
 
 @Injectable()
 export class ProductBrandService {
@@ -18,7 +19,7 @@ export class ProductBrandService {
 
   async create(createProductBrandDto: CreateProductBrandDto): Promise<ProductBrandDto> {
     const { name, image } = createProductBrandDto;
-    const productBrand = await this.productBrandModel.create({ name });
+    const productBrand = await this.productBrandModel.create({ name, slug: createSlug(name) });
 
     if (image) {
       try {
@@ -37,7 +38,7 @@ export class ProductBrandService {
   }
 
   findAll() {
-    return this.productBrandModel.find({}).sort('name');
+    return this.productBrandModel.find({}).sort('slug');
   }
 
   async findOne(id: string) {
@@ -68,7 +69,10 @@ export class ProductBrandService {
       }
     }
 
-    if (name && name !== brand.name) brand.name = name;
+    if (name && name !== brand.name) {
+      brand.name = name;
+      brand.slug = createSlug(name);
+    }
     if (newImage) brand.image = newImage;
 
     try {
