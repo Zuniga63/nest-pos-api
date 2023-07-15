@@ -9,5 +9,6 @@ export default new DocumentBuilder()
   .addTag('Roles', 'Routes for role administration')
   .addTag('Cashboxes', 'Routes for boxes administration')
   .addTag('Brands', 'End points for products brand admin')
+  .addTag('Tags', 'CRUD for product tags')
   .addBearerAuth()
   .build();

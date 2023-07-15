@@ -10,6 +10,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { MailModule } from './modules/mail/mail.module';
 import { CashboxesModule } from './modules/cashboxes/cashboxes.module';
 import { ProductBrandModule } from './modules/product-brands/product-brands.module';
+import { ProductTagsModule } from './modules/product-tags/product-tags.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -28,6 +29,7 @@ import configuration from './config/configuration';
     MailModule,
     CashboxesModule,
     ProductBrandModule,
+    ProductTagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
