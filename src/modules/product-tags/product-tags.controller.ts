@@ -15,7 +15,7 @@ import ValidationErrorDto from 'src/dto/validation-error.dto';
 import { FindOneParams } from './dto/find-one-params.dto';
 
 @Controller('product-tags')
-@ApiTags('Tags')
+@ApiTags('Product Tags')
 export class ProductTagsController {
   constructor(private readonly productTagsService: ProductTagsService) {}
 
