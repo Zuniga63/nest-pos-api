@@ -10,5 +10,6 @@ export default new DocumentBuilder()
   .addTag('Cashboxes', 'Routes for boxes administration')
   .addTag('Brands', 'End points for products brand admin')
   .addTag('Tags', 'CRUD for product tags')
+  .addTag('Product Colors', 'CRUD for product color')
   .addBearerAuth()
   .build();

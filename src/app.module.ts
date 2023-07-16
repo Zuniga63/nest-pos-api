@@ -11,6 +11,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { CashboxesModule } from './modules/cashboxes/cashboxes.module';
 import { ProductBrandModule } from './modules/product-brands/product-brands.module';
 import { ProductTagsModule } from './modules/product-tags/product-tags.module';
+import { ProductColorsModule } from './modules/product-colors/product-colors.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -30,6 +31,7 @@ import configuration from './config/configuration';
     CashboxesModule,
     ProductBrandModule,
     ProductTagsModule,
+    ProductColorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
