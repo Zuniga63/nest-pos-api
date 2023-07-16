@@ -11,5 +11,6 @@ export default new DocumentBuilder()
   .addTag('Brands', 'End points for products brand admin')
   .addTag('Tags', 'CRUD for product tags')
   .addTag('Product Colors', 'CRUD for product color')
+  .addTag('Product Size', 'Crud for product size')
   .addBearerAuth()
   .build();

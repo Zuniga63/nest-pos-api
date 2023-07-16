@@ -12,6 +12,7 @@ import { CashboxesModule } from './modules/cashboxes/cashboxes.module';
 import { ProductBrandModule } from './modules/product-brands/product-brands.module';
 import { ProductTagsModule } from './modules/product-tags/product-tags.module';
 import { ProductColorsModule } from './modules/product-colors/product-colors.module';
+import { ProductSizesModule } from './modules/product-sizes/product-sizes.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -32,6 +33,7 @@ import configuration from './config/configuration';
     ProductBrandModule,
     ProductTagsModule,
     ProductColorsModule,
+    ProductSizesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
