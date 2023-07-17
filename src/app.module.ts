@@ -13,6 +13,7 @@ import { ProductBrandModule } from './modules/product-brands/product-brands.modu
 import { ProductTagsModule } from './modules/product-tags/product-tags.module';
 import { ProductColorsModule } from './modules/product-colors/product-colors.module';
 import { ProductSizesModule } from './modules/product-sizes/product-sizes.module';
+import { ProductCategoriesModule } from './modules/product-categories/product-categories.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -34,6 +35,7 @@ import configuration from './config/configuration';
     ProductTagsModule,
     ProductColorsModule,
     ProductSizesModule,
+    ProductCategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
