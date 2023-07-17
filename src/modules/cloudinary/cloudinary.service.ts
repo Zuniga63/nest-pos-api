@@ -6,6 +6,7 @@ import { IImage } from 'src/types';
 import { nanoid } from 'nanoid';
 import createProfilePhotosPreset from './presets/create-user-profile-preset';
 import createProductBrandPreset from './presets/create-product-brand-preset';
+import createProductCategoryPreset from './presets/create-product-category-preset';
 
 @Injectable()
 export class CloudinaryService {
@@ -50,7 +51,11 @@ export class CloudinaryService {
   }
 
   createPresets() {
-    const result = Promise.all([createProfilePhotosPreset(), createProductBrandPreset()]);
+    const result = Promise.all([
+      createProfilePhotosPreset(),
+      createProductBrandPreset(),
+      createProductCategoryPreset(),
+    ]);
     return result;
   }
 

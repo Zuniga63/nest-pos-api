@@ -1,8 +1,8 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryPreset } from '../preset.enum';
 
-export default async function createProductBrandPreset(folder = 'brands') {
-  const presetName = CloudinaryPreset.PRODUCT_BRAND;
+export default async function createProductCategoryPreset(folder = 'categories') {
+  const presetName = CloudinaryPreset.PRODUCT_CATEGORY;
   let message = '';
 
   try {
