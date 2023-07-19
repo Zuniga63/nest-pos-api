@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, HydratedDocument } from 'mongoose';
+import { Product } from 'src/modules/products/schemas/product.schema';
 import { IImage } from 'src/types';
 
 export type ProductCategoryDocument = HydratedDocument<ProductCategory>;
@@ -43,6 +44,13 @@ export class ProductCategory {
 
   @Prop({ required: true, default: true })
   isPublished: boolean;
+
+  @Prop({
+    type: [MongooseSchema.Types.ObjectId],
+    ref: 'Product',
+    required: false,
+  })
+  products: Product[];
 
   createdAt: Date;
 

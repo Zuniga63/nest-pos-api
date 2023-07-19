@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Schema as MongooseSchema, HydratedDocument } from 'mongoose';
+import { Product } from 'src/modules/products/schemas/product.schema';
 
 export type ProductColorDocument = HydratedDocument<ProductColor>;
 
@@ -23,6 +24,13 @@ export class ProductColor {
 
   @Prop({ maxlength: [20, 'Referencia no puede ser mayor a 20 caracteres'], index: { unique: true, sparse: true } })
   colorRef?: string;
+
+  @Prop({
+    type: [MongooseSchema.Types.ObjectId],
+    ref: 'Product',
+    required: false,
+  })
+  products: Product[];
 
   createdAt: Date;
 

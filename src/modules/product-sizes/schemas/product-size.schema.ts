@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Schema as MongooseSchema, HydratedDocument } from 'mongoose';
+import { Product } from 'src/modules/products/schemas/product.schema';
 
 export enum ProductSizeEnum {
   SHOES = 'shoes',
@@ -26,6 +27,13 @@ export class ProductSize {
 
   @Prop({ required: true, default: 1, min: [1, 'Debe ser mayor que cero(0)'] })
   order: number;
+
+  @Prop({
+    type: [MongooseSchema.Types.ObjectId],
+    ref: 'Product',
+    required: false,
+  })
+  products: Product[];
 
   createdAt: Date;
 
