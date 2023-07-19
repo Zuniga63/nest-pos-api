@@ -19,7 +19,7 @@ async function bootstrap() {
 
   // Swagger COnfig
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api-docs', app, document, { swaggerOptions: { docExpansion: 'none' } });
 
   app.useGlobalPipes(new ValidationPipe(validationConfig));
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
