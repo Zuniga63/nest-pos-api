@@ -8,5 +8,6 @@ import { ProductColor, ProductColorSchema } from './schemas/product-color.schema
   imports: [MongooseModule.forFeature([{ name: ProductColor.name, schema: ProductColorSchema }])],
   controllers: [ProductColorsController],
   providers: [ProductColorsService],
+  exports: [ProductColorsService],
 })
 export class ProductColorsModule {}
